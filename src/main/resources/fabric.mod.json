@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "rarefishfinder",
+  "version": "${version}",
+  "name": "Rare Fish Finder",
+  "description": "Makes special tropical fish glow and shows their info",
+  "authors": [
+    "DC: rasmuskd, MC: WhoToldYou"
+  ],
+  "license": "MIT",
+  "icon": "assets/rarefishfinder/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "main": [
+      "com.rasmus.rarefishfinder.RareFishFinder"
+    ],
+    "client": [
+      "com.rasmus.rarefishfinder.client.RareFishFinderClient"
+    ],
+    "modmenu": [
+      "com.rasmus.rarefishfinder.config.TropicalFishModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "rarefishfinder.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "~${minecraft_version}",
+    "cloth-config2": ">=16.0.141"
+  },
+  "suggests": {
+    "modmenu": "*"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "mappings": {
+    "com/rasmus/rarefishfinder/mixin/EntityMixin": {
+      "isGlowing": "Lnet/minecraft/class_1297;method_5851()Z",
+      "tick": "Lnet/minecraft/class_1297;method_5773()V"
+    }
+  },
+  "data": {
+    "named:intermediary": {
+      "com/rasmus/rarefishfinder/mixin/EntityMixin": {
+        "isGlowing": "Lnet/minecraft/class_1297;method_5851()Z",
+        "tick": "Lnet/minecraft/class_1297;method_5773()V"
+      }
+    }
+  }
+}

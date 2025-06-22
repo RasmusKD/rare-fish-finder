@@ -1,0 +1,5 @@
+/effect give Player540 minecraft:night_vision
+/time set day
+/effect give Player785 minecraft:night_vision
+/effect give Player488 minecraft:night_vision infinite
+/effect give Player775 minecraft:night_vision infinite
