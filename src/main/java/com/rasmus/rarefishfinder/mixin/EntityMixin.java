@@ -19,9 +19,9 @@ public class EntityMixin {
         Entity entity = (Entity) (Object) this;
         if (entity instanceof TropicalFishEntity tropicalFish) {
             TropicalFishEntity.Variant currentVariant = new TropicalFishEntity.Variant(
-                    tropicalFish.getVariant(),
-                    tropicalFish.getBaseColorComponents(),
-                    tropicalFish.getPatternColorComponents()
+                    tropicalFish.getVariety(),
+                    tropicalFish.getBaseColor(),
+                    tropicalFish.getPatternColor()
             );
 
             if (!TropicalFishEntity.COMMON_VARIANTS.contains(currentVariant)) {
@@ -35,24 +35,25 @@ public class EntityMixin {
         Entity entity = (Entity) (Object) this;
         if (entity instanceof TropicalFishEntity tropicalFish) {
             TropicalFishEntity.Variant currentVariant = new TropicalFishEntity.Variant(
-                    tropicalFish.getVariant(),
-                    tropicalFish.getBaseColorComponents(),
-                    tropicalFish.getPatternColorComponents()
+                    tropicalFish.getVariety(),
+                    tropicalFish.getBaseColor(),
+                    tropicalFish.getPatternColor()
             );
 
             if (!TropicalFishEntity.COMMON_VARIANTS.contains(currentVariant)) {
                 TropicalFishConfig config = TropicalFishConfig.get();
 
                 if (config.namesEnabled) {
+                    // Set name if it doesn't have one
                     if (!tropicalFish.hasCustomName()) {
-                        String patternName = tropicalFish.getVariant().asString();  // Changed
-                        String baseColorName = tropicalFish.getBaseColorComponents().asString().replace('_', ' ');  // Changed
-                        String patternColorName = tropicalFish.getPatternColorComponents().asString().replace('_', ' ');  // Changed
+                        String patternName = tropicalFish.getVariety().asString();
+                        String baseColorName = tropicalFish.getBaseColor().asString().replace('_', ' ');
+                        String patternColorName = tropicalFish.getPatternColor().asString().replace('_', ' ');
 
                         Text patternText = Text.literal(patternName).formatted(Formatting.GOLD, Formatting.BOLD);
 
                         Text colorText;
-                        if (tropicalFish.getBaseColorComponents() == tropicalFish.getPatternColorComponents()) {  // Changed
+                        if (tropicalFish.getBaseColor() == tropicalFish.getPatternColor()) {
                             colorText = Text.literal("solid " + baseColorName)
                                     .formatted(Formatting.LIGHT_PURPLE);
                         } else {
@@ -69,6 +70,7 @@ public class EntityMixin {
                         tropicalFish.setCustomNameVisible(true);
                     }
                 } else {
+                    // Remove name if names are disabled
                     if (tropicalFish.hasCustomName()) {
                         tropicalFish.setCustomName(null);
                         tropicalFish.setCustomNameVisible(false);
