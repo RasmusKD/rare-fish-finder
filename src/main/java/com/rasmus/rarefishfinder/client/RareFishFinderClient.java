@@ -26,7 +26,7 @@ public class RareFishFinderClient implements ClientModInitializer {
                 new KeyBinding(
                         "key.rarefishfinder.toggleGlow",
                         InputUtil.Type.KEYSYM,
-                        71, // G key
+                        82, // R key (for Rare fish)
                         "key.category.rarefishfinder"
                 )
         );

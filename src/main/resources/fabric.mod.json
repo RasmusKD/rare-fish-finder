@@ -28,7 +28,7 @@
     "fabricloader": ">=${loader_version}",
     "fabric-api": "*",
     "minecraft": "~${minecraft_version}",
-    "cloth-config2": ">=16.0.141"
+    "cloth-config2": ">=19.0.146"
   },
   "suggests": {
     "modmenu": "*"

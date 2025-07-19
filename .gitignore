@@ -26,9 +26,16 @@ gradle/wrapper/gradle-wrapper.jar
 remapped-mods/
 remapped-sources/
 
+# minecraft/development files
+run/saves/
+run/logs/
+run/crash-reports/
+run/screenshots/
+run/resourcepacks/
+run/shaderpacks/
+
 # other
 eclipse/
-run/
 logs/
 
 # OS files

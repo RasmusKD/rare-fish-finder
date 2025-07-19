@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "rarefishfinder",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "name": "Rare Fish Finder",
   "description": "Makes special tropical fish glow and shows their info",
   "authors": [
@@ -27,8 +27,8 @@
   "depends": {
     "fabricloader": ">=0.16.14",
     "fabric-api": "*",
-    "minecraft": "~1.21.4",
-    "cloth-config2": ">=16.0.141"
+    "minecraft": "~1.21.6",
+    "cloth-config2": ">=19.0.146"
   },
   "suggests": {
     "modmenu": "*"
