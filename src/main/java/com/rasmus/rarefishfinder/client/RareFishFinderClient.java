@@ -1,13 +1,14 @@
 package com.rasmus.rarefishfinder.client;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.rasmus.rarefishfinder.config.TropicalFishConfig;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.Text;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,33 +16,36 @@ public class RareFishFinderClient implements ClientModInitializer {
     public static final String MOD_ID = "rarefishfinder";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-    private static KeyBinding toggleGlowKeyBinding;
-    private static KeyBinding toggleNamesKeyBinding;
+    private static KeyMapping toggleGlowKeyBinding;
+    private static KeyMapping toggleNamesKeyBinding;
+
+    private static final KeyMapping.Category RAREFISH_CATEGORY = KeyMapping.Category.register(
+            Identifier.fromNamespaceAndPath("rarefishfinder", "category"));
 
     @Override
     public void onInitializeClient() {
-        LOGGER.info("Test MobGlow mod initialized!");
+        LOGGER.info("Rare Fish Finder initialized!");
 
-        toggleGlowKeyBinding = KeyBindingHelper.registerKeyBinding(
-                new KeyBinding(
+        toggleGlowKeyBinding = KeyMappingHelper.registerKeyMapping(
+                new KeyMapping(
                         "key.rarefishfinder.toggleGlow",
-                        InputUtil.Type.KEYSYM,
+                        InputConstants.Type.KEYSYM,
                         82, // R key (for Rare fish)
-                        "key.category.rarefishfinder"
+                        RAREFISH_CATEGORY
                 )
         );
 
-        toggleNamesKeyBinding = KeyBindingHelper.registerKeyBinding(
-                new KeyBinding(
+        toggleNamesKeyBinding = KeyMappingHelper.registerKeyMapping(
+                new KeyMapping(
                         "key.rarefishfinder.toggleNames",
-                        InputUtil.Type.KEYSYM,
+                        InputConstants.Type.KEYSYM,
                         78, // N key
-                        "key.category.rarefishfinder"
+                        RAREFISH_CATEGORY
                 )
         );
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            while (toggleGlowKeyBinding.wasPressed()) {
+            while (toggleGlowKeyBinding.consumeClick()) {
                 TropicalFishConfig config = TropicalFishConfig.get();
                 config.glowEnabled = !config.glowEnabled;
                 AutoConfig.getConfigHolder(TropicalFishConfig.class).save();
@@ -50,11 +54,11 @@ public class RareFishFinderClient implements ClientModInitializer {
                         "Tropical fish glow enabled" : "Tropical fish glow disabled";
 
                 if (client.player != null) {
-                    client.player.sendMessage(Text.literal(message), false);
+                    client.player.sendSystemMessage(Component.literal(message));
                 }
             }
 
-            while (toggleNamesKeyBinding.wasPressed()) {
+            while (toggleNamesKeyBinding.consumeClick()) {
                 TropicalFishConfig config = TropicalFishConfig.get();
                 config.namesEnabled = !config.namesEnabled;
                 AutoConfig.getConfigHolder(TropicalFishConfig.class).save();
@@ -63,7 +67,7 @@ public class RareFishFinderClient implements ClientModInitializer {
                         "Tropical fish names enabled" : "Tropical fish names disabled";
 
                 if (client.player != null) {
-                    client.player.sendMessage(Text.literal(message), false);
+                    client.player.sendSystemMessage(Component.literal(message));
                 }
             }
         });

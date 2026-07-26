@@ -1,10 +1,10 @@
 package com.rasmus.rarefishfinder.mixin;
 
 import com.rasmus.rarefishfinder.config.TropicalFishConfig;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.TropicalFishEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.animal.fish.TropicalFish;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -14,17 +14,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Entity.class)
 public class EntityMixin {
 
-    @Inject(method = "isGlowing", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "isCurrentlyGlowing", at = @At("HEAD"), cancellable = true)
     private void makeSpecialTropicalFishGlow(CallbackInfoReturnable<Boolean> cir) {
         Entity entity = (Entity) (Object) this;
-        if (entity instanceof TropicalFishEntity tropicalFish) {
-            TropicalFishEntity.Variant currentVariant = new TropicalFishEntity.Variant(
-                    tropicalFish.getVariety(),
+        if (entity instanceof TropicalFish tropicalFish) {
+            TropicalFish.Variant currentVariant = new TropicalFish.Variant(
+                    tropicalFish.getPattern(),
                     tropicalFish.getBaseColor(),
                     tropicalFish.getPatternColor()
             );
 
-            if (!TropicalFishEntity.COMMON_VARIANTS.contains(currentVariant)) {
+            if (!TropicalFish.COMMON_VARIANTS.contains(currentVariant)) {
                 cir.setReturnValue(TropicalFishConfig.get().glowEnabled);
             }
         }
@@ -33,37 +33,38 @@ public class EntityMixin {
     @Inject(method = "tick", at = @At("HEAD"))
     private void handleSpecialTropicalFishNames(CallbackInfo ci) {
         Entity entity = (Entity) (Object) this;
-        if (entity instanceof TropicalFishEntity tropicalFish) {
-            TropicalFishEntity.Variant currentVariant = new TropicalFishEntity.Variant(
-                    tropicalFish.getVariety(),
+        if (entity instanceof TropicalFish tropicalFish) {
+            TropicalFish.Variant currentVariant = new TropicalFish.Variant(
+                    tropicalFish.getPattern(),
                     tropicalFish.getBaseColor(),
                     tropicalFish.getPatternColor()
             );
 
-            if (!TropicalFishEntity.COMMON_VARIANTS.contains(currentVariant)) {
+            if (!TropicalFish.COMMON_VARIANTS.contains(currentVariant)) {
                 TropicalFishConfig config = TropicalFishConfig.get();
 
                 if (config.namesEnabled) {
                     // Set name if it doesn't have one
                     if (!tropicalFish.hasCustomName()) {
-                        String patternName = tropicalFish.getVariety().asString();
-                        String baseColorName = tropicalFish.getBaseColor().asString().replace('_', ' ');
-                        String patternColorName = tropicalFish.getPatternColor().asString().replace('_', ' ');
+                        String patternName = tropicalFish.getPattern().getSerializedName();
+                        String baseColorName = tropicalFish.getBaseColor().getSerializedName().replace('_', ' ');
+                        String patternColorName = tropicalFish.getPatternColor().getSerializedName().replace('_', ' ');
 
-                        Text patternText = Text.literal(patternName).formatted(Formatting.GOLD, Formatting.BOLD);
+                        Component patternText = Component.literal(patternName)
+                                .withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD);
 
-                        Text colorText;
+                        Component colorText;
                         if (tropicalFish.getBaseColor() == tropicalFish.getPatternColor()) {
-                            colorText = Text.literal("solid " + baseColorName)
-                                    .formatted(Formatting.LIGHT_PURPLE);
+                            colorText = Component.literal("solid " + baseColorName)
+                                    .withStyle(ChatFormatting.LIGHT_PURPLE);
                         } else {
-                            colorText = Text.literal(baseColorName + " & " + patternColorName)
-                                    .formatted(Formatting.YELLOW);
+                            colorText = Component.literal(baseColorName + " & " + patternColorName)
+                                    .withStyle(ChatFormatting.YELLOW);
                         }
 
-                        Text customName = Text.empty()
+                        Component customName = Component.empty()
                                 .append(patternText)
-                                .append(Text.literal(" ").formatted(Formatting.RESET))
+                                .append(Component.literal(" ").withStyle(ChatFormatting.RESET))
                                 .append(colorText);
 
                         tropicalFish.setCustomName(customName);

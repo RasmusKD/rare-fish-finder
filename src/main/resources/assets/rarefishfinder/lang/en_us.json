@@ -6,5 +6,6 @@
   "text.autoconfig.rarefishfinder.option.glowEnabled": "Enable Glow Effect",
   "text.autoconfig.rarefishfinder.option.glowEnabled.@Tooltip": "Makes rare tropical fish glow with an outline.",
   "text.autoconfig.rarefishfinder.option.namesEnabled": "Enable Names",
-  "text.autoconfig.rarefishfinder.option.namesEnabled.@Tooltip": "Shows pattern and color information above rare tropical fish."
+  "text.autoconfig.rarefishfinder.option.namesEnabled.@Tooltip": "Shows pattern and color information above rare tropical fish.",
+  "key.categories.rarefishfinder.category": "Rare Fish Finder"
 }
