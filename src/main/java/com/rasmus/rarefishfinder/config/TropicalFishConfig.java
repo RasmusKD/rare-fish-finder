@@ -15,6 +15,10 @@ public class TropicalFishConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     public boolean namesEnabled = true;
 
+    @ConfigEntry.ColorPicker
+    @ConfigEntry.Gui.Tooltip
+    public int glowColor = 0xFFFFFF;
+
     public static void register() {
         AutoConfig.register(TropicalFishConfig.class, GsonConfigSerializer::new);
     }

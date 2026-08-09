@@ -30,6 +30,27 @@ public class EntityMixin {
         }
     }
 
+    @Inject(method = "getTeamColor", at = @At("HEAD"), cancellable = true)
+    private void useConfiguredGlowColor(CallbackInfoReturnable<Integer> cir) {
+        Entity entity = (Entity) (Object) this;
+        if (entity instanceof TropicalFish tropicalFish) {
+            TropicalFishConfig config = TropicalFishConfig.get();
+            if (!config.glowEnabled) {
+                return;
+            }
+
+            TropicalFish.Variant currentVariant = new TropicalFish.Variant(
+                    tropicalFish.getPattern(),
+                    tropicalFish.getBaseColor(),
+                    tropicalFish.getPatternColor()
+            );
+
+            if (!TropicalFish.COMMON_VARIANTS.contains(currentVariant)) {
+                cir.setReturnValue(config.glowColor);
+            }
+        }
+    }
+
     @Inject(method = "tick", at = @At("HEAD"))
     private void handleSpecialTropicalFishNames(CallbackInfo ci) {
         Entity entity = (Entity) (Object) this;
