@@ -51,6 +51,29 @@ public class EntityMixin {
         }
     }
 
+    @Inject(method = "shouldRenderAtSqrDistance", at = @At("HEAD"), cancellable = true)
+    private void alwaysRenderRareFish(double distance, CallbackInfoReturnable<Boolean> cir) {
+        Entity entity = (Entity) (Object) this;
+        if (entity instanceof TropicalFish tropicalFish) {
+            TropicalFishConfig config = TropicalFishConfig.get();
+            if (!config.glowEnabled) {
+                return;
+            }
+
+            TropicalFish.Variant currentVariant = new TropicalFish.Variant(
+                    tropicalFish.getPattern(),
+                    tropicalFish.getBaseColor(),
+                    tropicalFish.getPatternColor()
+            );
+
+            // Keep rare fish rendered (and therefore glowing) as far out as the client
+            // knows about them instead of stopping at the size-based render cutoff
+            if (!TropicalFish.COMMON_VARIANTS.contains(currentVariant)) {
+                cir.setReturnValue(true);
+            }
+        }
+    }
+
     @Inject(method = "tick", at = @At("HEAD"))
     private void handleSpecialTropicalFishNames(CallbackInfo ci) {
         Entity entity = (Entity) (Object) this;
