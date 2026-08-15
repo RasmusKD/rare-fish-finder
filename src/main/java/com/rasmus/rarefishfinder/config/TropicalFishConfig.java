@@ -20,7 +20,7 @@ public class TropicalFishConfig implements ConfigData {
     public int glowColor = 0xFFFFFF;
 
     @ConfigEntry.Gui.Tooltip
-    public boolean hideCommonFishOnXaeroMap = true;
+    public boolean hideCommonFishOnXaeroMap = false;
 
     @ConfigEntry.Gui.Tooltip
     public boolean onlyTropicalFishOnXaeroMap = false;
