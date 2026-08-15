@@ -22,6 +22,9 @@ public class TropicalFishConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     public boolean hideCommonFishOnXaeroMap = true;
 
+    @ConfigEntry.Gui.Tooltip
+    public boolean onlyTropicalFishOnXaeroMap = false;
+
     public static void register() {
         AutoConfig.register(TropicalFishConfig.class, GsonConfigSerializer::new);
     }

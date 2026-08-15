@@ -23,9 +23,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class XaeroRadarListMixin {
 
     @Inject(method = "add", at = @At("HEAD"), cancellable = true)
-    private void hideCommonFishFromRadar(Entity entity, CallbackInfoReturnable<Boolean> cir) {
+    private void filterRadarEntities(Entity entity, CallbackInfoReturnable<Boolean> cir) {
+        TropicalFishConfig config = TropicalFishConfig.get();
+        if (config.onlyTropicalFishOnXaeroMap && !(entity instanceof TropicalFish)) {
+            cir.setReturnValue(false);
+            return;
+        }
         if (entity instanceof TropicalFish fish
-                && TropicalFishConfig.get().hideCommonFishOnXaeroMap
+                && config.hideCommonFishOnXaeroMap
                 && !RareFishVariants.isRare(fish)) {
             cir.setReturnValue(false);
         }

@@ -31,7 +31,8 @@ public class RareFishFinderClient implements ClientModInitializer {
         if (!net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("xaerominimap")) {
             me.shedaniel.autoconfig.AutoConfigClient.getGuiRegistry(TropicalFishConfig.class).registerPredicateProvider(
                     (i13n, field, config, defaults, registry) -> java.util.Collections.emptyList(),
-                    field -> field.getName().equals("hideCommonFishOnXaeroMap"));
+                    field -> field.getName().equals("hideCommonFishOnXaeroMap")
+                            || field.getName().equals("onlyTropicalFishOnXaeroMap"));
         }
 
         toggleGlowKeyBinding = KeyMappingHelper.registerKeyMapping(
