@@ -1,6 +1,7 @@
 package com.rasmus.rarefishfinder.mixin;
 
 import com.rasmus.rarefishfinder.config.TropicalFishConfig;
+import com.rasmus.rarefishfinder.util.RareFishVariants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
@@ -18,13 +19,7 @@ public class EntityMixin {
     private void makeSpecialTropicalFishGlow(CallbackInfoReturnable<Boolean> cir) {
         Entity entity = (Entity) (Object) this;
         if (entity instanceof TropicalFish tropicalFish) {
-            TropicalFish.Variant currentVariant = new TropicalFish.Variant(
-                    tropicalFish.getPattern(),
-                    tropicalFish.getBaseColor(),
-                    tropicalFish.getPatternColor()
-            );
-
-            if (!TropicalFish.COMMON_VARIANTS.contains(currentVariant)) {
+            if (RareFishVariants.isRare(tropicalFish)) {
                 cir.setReturnValue(TropicalFishConfig.get().glowEnabled);
             }
         }
@@ -39,13 +34,7 @@ public class EntityMixin {
                 return;
             }
 
-            TropicalFish.Variant currentVariant = new TropicalFish.Variant(
-                    tropicalFish.getPattern(),
-                    tropicalFish.getBaseColor(),
-                    tropicalFish.getPatternColor()
-            );
-
-            if (!TropicalFish.COMMON_VARIANTS.contains(currentVariant)) {
+            if (RareFishVariants.isRare(tropicalFish)) {
                 cir.setReturnValue(config.glowColor);
             }
         }
@@ -60,15 +49,7 @@ public class EntityMixin {
                 return;
             }
 
-            TropicalFish.Variant currentVariant = new TropicalFish.Variant(
-                    tropicalFish.getPattern(),
-                    tropicalFish.getBaseColor(),
-                    tropicalFish.getPatternColor()
-            );
-
-            // Keep rare fish rendered (and therefore glowing) as far out as the client
-            // knows about them instead of stopping at the size-based render cutoff
-            if (!TropicalFish.COMMON_VARIANTS.contains(currentVariant)) {
+            if (RareFishVariants.isRare(tropicalFish)) {
                 cir.setReturnValue(true);
             }
         }
@@ -78,13 +59,7 @@ public class EntityMixin {
     private void handleSpecialTropicalFishNames(CallbackInfo ci) {
         Entity entity = (Entity) (Object) this;
         if (entity instanceof TropicalFish tropicalFish) {
-            TropicalFish.Variant currentVariant = new TropicalFish.Variant(
-                    tropicalFish.getPattern(),
-                    tropicalFish.getBaseColor(),
-                    tropicalFish.getPatternColor()
-            );
-
-            if (!TropicalFish.COMMON_VARIANTS.contains(currentVariant)) {
+            if (RareFishVariants.isRare(tropicalFish)) {
                 TropicalFishConfig config = TropicalFishConfig.get();
 
                 if (config.namesEnabled) {

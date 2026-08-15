@@ -19,6 +19,9 @@ public class TropicalFishConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     public int glowColor = 0xFFFFFF;
 
+    @ConfigEntry.Gui.Tooltip
+    public boolean hideCommonFishOnXaeroMap = true;
+
     public static void register() {
         AutoConfig.register(TropicalFishConfig.class, GsonConfigSerializer::new);
     }

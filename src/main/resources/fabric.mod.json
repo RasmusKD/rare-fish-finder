@@ -32,6 +32,7 @@
     "java": ">=25"
   },
   "suggests": {
-    "modmenu": "*"
+    "modmenu": "*",
+    "xaerominimap": "*"
   }
 }

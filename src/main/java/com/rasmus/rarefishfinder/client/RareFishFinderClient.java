@@ -26,6 +26,14 @@ public class RareFishFinderClient implements ClientModInitializer {
     public void onInitializeClient() {
         LOGGER.info("Rare Fish Finder initialized!");
 
+        // The Xaero map option only exists when the map does: without the mod
+        // the mixin never applies, so showing the toggle would sell a no-op.
+        if (!net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("xaerominimap")) {
+            me.shedaniel.autoconfig.AutoConfigClient.getGuiRegistry(TropicalFishConfig.class).registerPredicateProvider(
+                    (i13n, field, config, defaults, registry) -> java.util.Collections.emptyList(),
+                    field -> field.getName().equals("hideCommonFishOnXaeroMap"));
+        }
+
         toggleGlowKeyBinding = KeyMappingHelper.registerKeyMapping(
                 new KeyMapping(
                         "key.rarefishfinder.toggleGlow",

@@ -6,7 +6,9 @@
   "mixins": [
     "EntityMixin"
   ],
-  "client": [],
+  "client": [
+    "XaeroRadarListMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }
