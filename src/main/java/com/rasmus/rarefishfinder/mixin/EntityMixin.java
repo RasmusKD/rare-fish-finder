@@ -84,7 +84,6 @@ public class EntityMixin {
     private void handleSpecialTropicalFishNames(CallbackInfo ci) {
         Entity entity = (Entity) (Object) this;
         if (entity instanceof TropicalFish tropicalFish) {
-            FishCollection.markSpotted(FishCollection.packedOf(tropicalFish));
             if (RareFishVariants.isRare(tropicalFish)) {
                 TropicalFishConfig config = TropicalFishConfig.get();
 

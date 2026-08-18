@@ -102,18 +102,10 @@ public final class CollectionScreen extends Screen {
                 int x = gridX + col * CELL;
                 int y = gridY + row * CELL;
                 boolean collected = FishCollection.isCollected(packed);
-                boolean spotted = FishCollection.isSpotted(packed);
                 if (collected) {
                     patternCollected++;
-                }
-
-                if (collected || spotted) {
                     int base = COLORS[row].getTextureDiffuseColor();
                     int pat = COLORS[col].getTextureDiffuseColor();
-                    if (!collected) {
-                        base = dim(base);
-                        pat = dim(pat);
-                    }
                     // left half base color, right half pattern color,
                     // split dead center so neither color gets squeezed
                     extractor.fill(x + 1, y + 1, x + CELL / 2, y + CELL - 1, base);
@@ -154,11 +146,10 @@ public final class CollectionScreen extends Screen {
             int packed = new TropicalFish.Variant(pattern, COLORS[hoverRow], COLORS[hoverCol])
                     .getPackedId();
             boolean collected = FishCollection.isCollected(packed);
-            boolean spotted = FishCollection.isSpotted(packed);
 
-            // fish preview, only for variants that have at least been spotted:
-            // no spoilers on what an unseen combination looks like
-            if (collected || spotted) {
+            // fish preview only for collected variants: seeing one swim by
+            // is not owning it, the model is the reward for the bucket
+            if (collected) {
                 TropicalFishConfig config = TropicalFishConfig.get();
                 FishTooltipRenderer.extractFish(extractor, packed,
                         infoX, infoY, infoX + INFO_WIDTH, infoY + 54, 48,
@@ -182,8 +173,8 @@ public final class CollectionScreen extends Screen {
                     niceName(COLORS[hoverRow].getName()) + " / "
                             + niceName(COLORS[hoverCol].getName()),
                     commonIndex != null ? 0xFFAAAAAA : 0xFFFFFFFF);
-            String state = collected ? "Collected" : (spotted ? "Spotted" : "Not seen");
-            int stateColor = collected ? 0xFF55FF55 : (spotted ? 0xFFFFFF55 : 0xFF888888);
+            String state = collected ? "Collected" : "Not collected";
+            int stateColor = collected ? 0xFF55FF55 : 0xFF888888;
             line = infoLine(extractor, infoX, line, state, stateColor);
             int catches = FishCollection.catches(packed);
             if (catches > 0) {

@@ -10,8 +10,8 @@ and this mod makes those glow and shows their pattern and colors above them.
   optional filter glows only what you have not collected yet
 - Name tags show pattern and colors above rare fish (N to toggle)
 - Bucket tooltips show the actual fish plus Rare, Solid and NEW badges
-- Fish collection screen (B): every variant per server, spotted or collected,
-  with catch counts. Hovering buckets in chests fills in what you already own
+- Fish collection screen (B): tracks collected variants and catch counts
+  per server. Hovering buckets in chests fills in what you already own
 - Everything is in Mod Menu > Rare Fish Finder
 
 If you run Xaero's Minimap there are two extra options, both off by default:

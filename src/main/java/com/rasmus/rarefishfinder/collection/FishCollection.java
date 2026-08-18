@@ -14,14 +14,16 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.animal.fish.TropicalFish;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.LevelResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Per-server record of which tropical fish variants have been spotted
- * swimming and which have been collected in a bucket. Variants are the unit:
- * two buckets of the same variant are indistinguishable, so the collection is
- * a set, not a count. Catches ARE countable, because they are events.
+ * Per-server record of which tropical fish variants have been collected in a
+ * bucket. Variants are the unit: two buckets of the same variant are
+ * indistinguishable, so the collection is a set, not a count. Catches ARE
+ * countable, because they are events.
  */
 public final class FishCollection {
     private static final Logger LOGGER = LoggerFactory.getLogger("rarefishfinder");
@@ -33,11 +35,7 @@ public final class FishCollection {
 
     private static final Map<Integer, Entry> entries = new HashMap<>();
     private static String loadedKey;
-
-    // Fast path for the per-tick spotted hook: variants already handled this
-    // session skip the key check and map lookup entirely. Cleared when the
-    // loaded collection swaps to another server.
-    private static final Set<Integer> spottedFast = new HashSet<>();
+    private static Level loadedLevel;
 
     // Mirror of the collected variant ids, safe to read every frame from the
     // glow hook without touching key computation or disk.
@@ -47,7 +45,6 @@ public final class FishCollection {
     }
 
     public static final class Entry {
-        public boolean spotted;
         public boolean collected;
         public int catches;
     }
@@ -57,22 +54,10 @@ public final class FishCollection {
                 fish.getPattern(), fish.getBaseColor(), fish.getPatternColor()).getPackedId();
     }
 
-    public static void markSpotted(int packed) {
-        if (!spottedFast.add(packed)) {
-            return;
-        }
-        Entry entry = entryFor(packed);
-        if (!entry.spotted) {
-            entry.spotted = true;
-            save();
-        }
-    }
-
     public static void markCollected(int packed) {
         Entry entry = entryFor(packed);
         if (!entry.collected) {
             entry.collected = true;
-            entry.spotted = true;
             collectedFast.add(packed);
             save();
         }
@@ -81,15 +66,9 @@ public final class FishCollection {
     public static void addCatch(int packed) {
         Entry entry = entryFor(packed);
         entry.collected = true;
-        entry.spotted = true;
         entry.catches++;
         collectedFast.add(packed);
         save();
-    }
-
-    public static boolean isSpotted(int packed) {
-        Entry entry = peek(packed);
-        return entry != null && entry.spotted;
     }
 
     public static boolean isCollected(int packed) {
@@ -98,11 +77,17 @@ public final class FishCollection {
     }
 
     /**
-     * Per-frame-safe collected check: a plain set read, no load or key
-     * computation. Populated once the collection loads, which the per-tick
-     * spotted hook triggers as soon as any tropical fish is near.
+     * Per-frame-safe collected check for the glow hooks: one reference
+     * compare on the current level, then a plain set read. The full key
+     * computation only reruns when the level object changes (login, world
+     * switch, dimension change).
      */
     public static boolean isCollectedFast(int packed) {
+        Level level = Minecraft.getInstance().level;
+        if (level != loadedLevel) {
+            loadedLevel = level;
+            ensureLoaded();
+        }
         return collectedFast.contains(packed);
     }
 
@@ -170,7 +155,6 @@ public final class FishCollection {
             return;
         }
         entries.clear();
-        spottedFast.clear();
         collectedFast.clear();
         loadedKey = key;
         Path file = fileFor(key);
@@ -182,7 +166,6 @@ public final class FishCollection {
             for (Map.Entry<String, JsonElement> e : root.entrySet()) {
                 JsonObject o = e.getValue().getAsJsonObject();
                 Entry entry = new Entry();
-                entry.spotted = o.has("spotted") && o.get("spotted").getAsBoolean();
                 entry.collected = o.has("collected") && o.get("collected").getAsBoolean();
                 entry.catches = o.has("catches") ? o.get("catches").getAsInt() : 0;
                 int packedKey = Integer.parseInt(e.getKey());
@@ -203,7 +186,6 @@ public final class FishCollection {
         JsonObject root = new JsonObject();
         for (Map.Entry<Integer, Entry> e : entries.entrySet()) {
             JsonObject o = new JsonObject();
-            o.addProperty("spotted", e.getValue().spotted);
             o.addProperty("collected", e.getValue().collected);
             o.addProperty("catches", e.getValue().catches);
             root.add(String.valueOf(e.getKey()), o);
@@ -218,11 +200,24 @@ public final class FishCollection {
     }
 
     private static String currentKey() {
-        var server = Minecraft.getInstance().getCurrentServer();
-        if (server == null || server.ip == null) {
-            return "local";
+        var minecraft = Minecraft.getInstance();
+        var server = minecraft.getCurrentServer();
+        if (server != null && server.ip != null) {
+            return sanitize(server.ip);
         }
-        return server.ip.toLowerCase().replaceAll("[^a-z0-9._-]", "_");
+        // Singleplayer: key by the world's save folder, so every world gets
+        // its own collection instead of all sharing one.
+        var integrated = minecraft.getSingleplayerServer();
+        if (integrated != null) {
+            String folder = integrated.getWorldPath(LevelResource.ROOT)
+                    .normalize().getFileName().toString();
+            return "sp-" + sanitize(folder);
+        }
+        return "local";
+    }
+
+    private static String sanitize(String raw) {
+        return raw.toLowerCase().replaceAll("[^a-z0-9._-]", "_");
     }
 
     private static Path fileFor(String key) {

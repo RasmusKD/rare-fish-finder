@@ -110,8 +110,14 @@ public class RareFishFinderClient implements ClientModInitializer {
                 AutoConfig.getConfigHolder(TropicalFishConfig.class).save();
 
                 if (client.player != null) {
+                    // Mention the collected-filter when it is active: it culls
+                    // glow silently, and "rare mode is broken" is what a
+                    // filtered-out reef looks like without this hint.
+                    String filter = config.glowOnlyUncollected
+                            && config.glowMode != TropicalFishConfig.GlowMode.OFF
+                            ? " (only uncollected)" : "";
                     client.player.sendSystemMessage(
-                            Component.literal("Tropical fish glow: " + config.glowMode));
+                            Component.literal("Tropical fish glow: " + config.glowMode + filter));
                 }
             }
 
