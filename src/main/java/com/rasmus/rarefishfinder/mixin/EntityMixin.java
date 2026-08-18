@@ -1,6 +1,8 @@
 package com.rasmus.rarefishfinder.mixin;
 
+import com.rasmus.rarefishfinder.collection.FishCollection;
 import com.rasmus.rarefishfinder.config.TropicalFishConfig;
+import com.rasmus.rarefishfinder.config.TropicalFishConfig.GlowMode;
 import com.rasmus.rarefishfinder.util.RareFishVariants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -19,8 +21,18 @@ public class EntityMixin {
     private void makeSpecialTropicalFishGlow(CallbackInfoReturnable<Boolean> cir) {
         Entity entity = (Entity) (Object) this;
         if (entity instanceof TropicalFish tropicalFish) {
-            if (RareFishVariants.isRare(tropicalFish)) {
-                cir.setReturnValue(TropicalFishConfig.get().glowEnabled);
+            TropicalFishConfig config = TropicalFishConfig.get();
+            GlowMode mode = config.glowMode;
+            boolean wanted = mode == GlowMode.ALL
+                    || (mode == GlowMode.RARE && RareFishVariants.isRare(tropicalFish));
+            if (wanted && config.glowOnlyUncollected
+                    && FishCollection.isCollectedFast(FishCollection.packedOf(tropicalFish))) {
+                wanted = false;
+            }
+            if (wanted) {
+                cir.setReturnValue(true);
+            } else if (mode != GlowMode.OFF && RareFishVariants.isRare(tropicalFish)) {
+                cir.setReturnValue(false);
             }
         }
     }
@@ -30,12 +42,19 @@ public class EntityMixin {
         Entity entity = (Entity) (Object) this;
         if (entity instanceof TropicalFish tropicalFish) {
             TropicalFishConfig config = TropicalFishConfig.get();
-            if (!config.glowEnabled) {
+            if (config.glowMode == GlowMode.OFF) {
+                return;
+            }
+            if (config.glowOnlyUncollected
+                    && FishCollection.isCollectedFast(FishCollection.packedOf(tropicalFish))) {
                 return;
             }
 
             if (RareFishVariants.isRare(tropicalFish)) {
                 cir.setReturnValue(config.glowColor);
+            } else if (config.glowMode == GlowMode.ALL) {
+                // Commons glow muted gray so the rares keep standing out.
+                cir.setReturnValue(0xAAAAAA);
             }
         }
     }
@@ -45,10 +64,16 @@ public class EntityMixin {
         Entity entity = (Entity) (Object) this;
         if (entity instanceof TropicalFish tropicalFish) {
             TropicalFishConfig config = TropicalFishConfig.get();
-            if (!config.glowEnabled) {
+            if (config.glowMode == GlowMode.OFF) {
+                return;
+            }
+            if (config.glowOnlyUncollected
+                    && FishCollection.isCollectedFast(FishCollection.packedOf(tropicalFish))) {
                 return;
             }
 
+            // Extended render distance stays rare-only: rendering every
+            // common tropical fish at any distance would be pure overhead.
             if (RareFishVariants.isRare(tropicalFish)) {
                 cir.setReturnValue(true);
             }
@@ -59,6 +84,7 @@ public class EntityMixin {
     private void handleSpecialTropicalFishNames(CallbackInfo ci) {
         Entity entity = (Entity) (Object) this;
         if (entity instanceof TropicalFish tropicalFish) {
+            FishCollection.markSpotted(FishCollection.packedOf(tropicalFish));
             if (RareFishVariants.isRare(tropicalFish)) {
                 TropicalFishConfig config = TropicalFishConfig.get();
 

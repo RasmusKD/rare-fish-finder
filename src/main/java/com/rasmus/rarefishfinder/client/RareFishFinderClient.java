@@ -1,7 +1,16 @@
 package com.rasmus.rarefishfinder.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.rasmus.rarefishfinder.collection.FishCollection;
+import com.rasmus.rarefishfinder.gui.CollectionScreen;
 import com.rasmus.rarefishfinder.config.TropicalFishConfig;
+import com.rasmus.rarefishfinder.tooltip.FishTooltip;
+import com.rasmus.rarefishfinder.tooltip.FishTooltipRenderer;
+import net.fabricmc.fabric.api.client.rendering.v1.ClientTooltipComponentCallback;
+import net.fabricmc.fabric.api.event.player.UseEntityCallback;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.animal.fish.TropicalFish;
+import net.minecraft.world.item.Items;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -18,6 +27,7 @@ public class RareFishFinderClient implements ClientModInitializer {
 
     private static KeyMapping toggleGlowKeyBinding;
     private static KeyMapping toggleNamesKeyBinding;
+    private static KeyMapping collectionKeyBinding;
 
     private static final KeyMapping.Category RAREFISH_CATEGORY = KeyMapping.Category.register(
             Identifier.fromNamespaceAndPath("rarefishfinder", "category"));
@@ -34,6 +44,30 @@ public class RareFishFinderClient implements ClientModInitializer {
                     field -> field.getName().equals("hideCommonFishOnXaeroMap")
                             || field.getName().equals("onlyTropicalFishOnXaeroMap"));
         }
+
+        // A water bucket used on a tropical fish is this client's own catch:
+        // count it and mark the variant collected.
+        UseEntityCallback.EVENT.register((player, level, hand, entity, hitResult) -> {
+            if (entity instanceof TropicalFish fish
+                    && player.getItemInHand(hand).is(Items.WATER_BUCKET)) {
+                // Our name tag is a spotting aid; without this strip it
+                // follows the fish into the bucket item's custom name and
+                // duplicates what the tooltip already shows. Runs on both
+                // sides so the singleplayer server copy is stripped too.
+                if (fish.hasCustomName()) {
+                    fish.setCustomName(null);
+                    fish.setCustomNameVisible(false);
+                }
+                if (level.isClientSide()) {
+                    FishCollection.addCatch(FishCollection.packedOf(fish));
+                }
+            }
+            return InteractionResult.PASS;
+        });
+
+        ClientTooltipComponentCallback.EVENT.register(component ->
+                component instanceof FishTooltip fishTooltip
+                        ? new FishTooltipRenderer(fishTooltip) : null);
 
         toggleGlowKeyBinding = KeyMappingHelper.registerKeyMapping(
                 new KeyMapping(
@@ -53,17 +87,31 @@ public class RareFishFinderClient implements ClientModInitializer {
                 )
         );
 
+        collectionKeyBinding = KeyMappingHelper.registerKeyMapping(
+                new KeyMapping(
+                        "key.rarefishfinder.collection",
+                        InputConstants.Type.KEYSYM,
+                        66, // B key
+                        RAREFISH_CATEGORY
+                )
+        );
+
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            while (collectionKeyBinding.consumeClick()) {
+                if (client.screen == null) {
+                    client.setScreenAndShow(new CollectionScreen());
+                }
+            }
+
             while (toggleGlowKeyBinding.consumeClick()) {
                 TropicalFishConfig config = TropicalFishConfig.get();
-                config.glowEnabled = !config.glowEnabled;
+                TropicalFishConfig.GlowMode[] modes = TropicalFishConfig.GlowMode.values();
+                config.glowMode = modes[(config.glowMode.ordinal() + 1) % modes.length];
                 AutoConfig.getConfigHolder(TropicalFishConfig.class).save();
 
-                String message = config.glowEnabled ?
-                        "Tropical fish glow enabled" : "Tropical fish glow disabled";
-
                 if (client.player != null) {
-                    client.player.sendSystemMessage(Component.literal(message));
+                    client.player.sendSystemMessage(
+                            Component.literal("Tropical fish glow: " + config.glowMode));
                 }
             }
 

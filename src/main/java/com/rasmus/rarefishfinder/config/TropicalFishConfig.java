@@ -9,19 +9,64 @@ import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 @Config(name = "rarefishfinder")
 public class TropicalFishConfig implements ConfigData {
 
-    @ConfigEntry.Gui.Tooltip
-    public boolean glowEnabled = true;
+    public enum GlowMode {
+        OFF, RARE, ALL;
 
+        @Override
+        public String toString() {
+            return switch (this) {
+                case OFF -> "Off";
+                case RARE -> "Rare fish";
+                case ALL -> "All tropical fish";
+            };
+        }
+    }
+
+    @ConfigEntry.Category("general")
+    @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.BUTTON)
+    @ConfigEntry.Gui.Tooltip
+    public GlowMode glowMode = GlowMode.RARE;
+
+    @ConfigEntry.Category("general")
+    @ConfigEntry.Gui.Tooltip
+    public boolean glowOnlyUncollected = false;
+
+    @ConfigEntry.Category("general")
     @ConfigEntry.Gui.Tooltip
     public boolean namesEnabled = true;
 
+    @ConfigEntry.Category("tooltip")
+    @ConfigEntry.Gui.Tooltip
+    public boolean showFishInTooltip = true;
+
+    @ConfigEntry.Category("tooltip")
+    @ConfigEntry.BoundedDiscrete(min = 0, max = 359)
+    @ConfigEntry.Gui.Tooltip
+    public int tooltipFishYaw = 135;
+
+    @ConfigEntry.Category("tooltip")
+    @ConfigEntry.BoundedDiscrete(min = -45, max = 45)
+    @ConfigEntry.Gui.Tooltip
+    public int tooltipFishTilt = -45;
+
+    @ConfigEntry.Category("general")
     @ConfigEntry.ColorPicker
     @ConfigEntry.Gui.Tooltip
     public int glowColor = 0xFFFFFF;
 
+    @ConfigEntry.Category("collection")
+    @ConfigEntry.Gui.Tooltip
+    public boolean hoverCollects = true;
+
+    @ConfigEntry.Category("collection")
+    @ConfigEntry.Gui.Tooltip
+    public boolean showNewBadge = true;
+
+    @ConfigEntry.Category("xaero")
     @ConfigEntry.Gui.Tooltip
     public boolean hideCommonFishOnXaeroMap = false;
 
+    @ConfigEntry.Category("xaero")
     @ConfigEntry.Gui.Tooltip
     public boolean onlyTropicalFishOnXaeroMap = false;
 
