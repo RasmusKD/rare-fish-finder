@@ -81,6 +81,10 @@ public final class FishTooltipRenderer implements ClientTooltipComponent {
 
     @Override
     public void extractText(GuiGraphicsExtractor extractor, Font font, int x, int y) {
+        // State only. Drawing happens in extractImage, which receives the
+        // tooltip's actual width: other lines (like a long item name) can
+        // make the box wider than this component, and centering on our own
+        // width alone would leave everything hugging the left edge.
         int packed = packedVariant(withVariantComponents(bucket));
 
         if (packed != badgeVariant) {
@@ -90,24 +94,21 @@ public final class FishTooltipRenderer implements ClientTooltipComponent {
         if (TropicalFishConfig.get().hoverCollects) {
             FishCollection.markCollected(packed);
         }
-
-        Component label = currentLabel();
-        int labelWidth = font.width(label);
-        int fullWidth = Math.max(MODEL_WIDTH, labelWidth);
-        extractor.text(font, label.getVisualOrderText(),
-                x + (fullWidth - labelWidth) / 2, y + MODEL_HEIGHT + TEXT_GAP, 0xFFFFFFFF, true);
     }
 
     @Override
     public void extractImage(Font font, int x, int y, int width, int height,
             GuiGraphicsExtractor extractor) {
         TropicalFishConfig config = TropicalFishConfig.get();
-        // Center the model box within the component's full width, which may
-        // exceed the box when the label is the wider of the two.
-        int offset = (Math.max(MODEL_WIDTH, font.width(currentLabel())) - MODEL_WIDTH) / 2;
+        // Left-aligned like the tooltip's text lines, so the component reads
+        // as part of the list regardless of how wide the title makes the box.
         extractFish(extractor, packedVariant(withVariantComponents(bucket)),
-                x + offset, y, x + offset + MODEL_WIDTH, y + MODEL_HEIGHT, MODEL_SIZE,
+                x, y, x + MODEL_WIDTH, y + MODEL_HEIGHT, MODEL_SIZE,
                 config.tooltipFishYaw, config.tooltipFishTilt);
+
+        Component label = currentLabel();
+        extractor.text(font, label.getVisualOrderText(),
+                x, y + MODEL_HEIGHT + TEXT_GAP, 0xFFFFFFFF, true);
     }
 
     /**

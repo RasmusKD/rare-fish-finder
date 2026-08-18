@@ -6,13 +6,13 @@ and this mod makes those glow and shows their pattern and colors above them.
 
 ## Usage
 
-- Rare fish glow (R to toggle) and get a name tag with their variant (N to toggle)
-- Tropical fish bucket tooltips show the actual fish model, whether it is rare,
-  and a NEW badge for variants you have not collected yet
-- Fish collection screen (B to open): 12 pattern tabs, each a 16x16 color grid
-  tracking spotted and collected variants per server. Bucketing a fish counts
-  as a catch; hovering buckets in chests fills in what you already own
-- Glow color and everything else is in Mod Menu > Rare Fish Finder
+- Rare fish glow. R cycles off / rare only / all tropical fish, and an
+  optional filter glows only what you have not collected yet
+- Name tags show pattern and colors above rare fish (N to toggle)
+- Bucket tooltips show the actual fish plus Rare, Solid and NEW badges
+- Fish collection screen (B): every variant per server, spotted or collected,
+  with catch counts. Hovering buckets in chests fills in what you already own
+- Everything is in Mod Menu > Rare Fish Finder
 
 If you run Xaero's Minimap there are two extra options, both off by default:
 hide common fish from the minimap and world map, or hide everything except
