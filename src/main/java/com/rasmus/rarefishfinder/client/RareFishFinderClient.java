@@ -11,8 +11,11 @@ import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.animal.fish.TropicalFish;
 import net.minecraft.world.item.Items;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.api.ClientModInitializer;
+import net.minecraft.client.Minecraft;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
@@ -31,6 +34,35 @@ public class RareFishFinderClient implements ClientModInitializer {
 
     private static final KeyMapping.Category RAREFISH_CATEGORY = KeyMapping.Category.register(
             Identifier.fromNamespaceAndPath("rarefishfinder", "category"));
+
+    // 26.1 exposes the current screen as the public field Minecraft.screen,
+    // 26.2 as the method Minecraft.screen(). A direct reference to either is
+    // a NoSuchFieldError/NoSuchMethodError on the other version, so the
+    // lookup happens once by name.
+    private static Method screenMethod;
+    private static Field screenField;
+    private static boolean screenLookupFailed;
+
+    private static boolean noScreenOpen(Minecraft client) {
+        if (screenLookupFailed) {
+            return true;
+        }
+        try {
+            if (screenMethod == null && screenField == null) {
+                try {
+                    screenMethod = Minecraft.class.getMethod("screen");
+                } catch (NoSuchMethodException e) {
+                    screenField = Minecraft.class.getField("screen");
+                }
+            }
+            Object screen = screenMethod != null
+                    ? screenMethod.invoke(client) : screenField.get(client);
+            return screen == null;
+        } catch (ReflectiveOperationException e) {
+            screenLookupFailed = true;
+            return true;
+        }
+    }
 
     @Override
     public void onInitializeClient() {
@@ -98,7 +130,7 @@ public class RareFishFinderClient implements ClientModInitializer {
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (collectionKeyBinding.consumeClick()) {
-                if (client.screen == null) {
+                if (noScreenOpen(client)) {
                     client.setScreenAndShow(new CollectionScreen());
                 }
             }
