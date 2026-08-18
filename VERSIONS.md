@@ -22,8 +22,9 @@ Identical in both, but not where you'd expect:
 - Leaf drips in rain: `LeavesBlock.makeDrippingWaterParticles`, separate
   from both the rain rendering and the ground splashes.
 - F3+B arrows: `EntityHitboxDebugRenderer.showHitboxes` via `Gizmos.arrow`.
-- Vanilla already has settings for vignette, darkness pulsing and FOV
-  effects. Don't duplicate them.
+- Vanilla already has settings for vignette, darkness pulsing, FOV
+  effects, clouds, menu blur and lightning flashes (Accessibility).
+  Don't duplicate them.
 
 Verifying: both mojmap jars sit in
 `~/.gradle/caches/fabric-loom/minecraftMaven/net/minecraft/minecraft-merged-deobf/`.
