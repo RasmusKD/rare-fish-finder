@@ -249,6 +249,22 @@ public final class FishTooltipRenderer implements ClientTooltipComponent {
      * bucket NBT. Upgrade the legacy form to components on a copy, so the
      * display fish can be fed through one path.
      */
+    /**
+     * The packed variant carried by a tropical fish bucket, or -1 when the
+     * stack is not a bucket with a variant. Legacy NBT buckets are upgraded
+     * the same way as everywhere else.
+     */
+    public static int bucketVariant(ItemStack stack) {
+        if (!stack.is(Items.TROPICAL_FISH_BUCKET)) {
+            return -1;
+        }
+        ItemStack upgraded = withVariantComponents(stack);
+        if (!upgraded.has(DataComponents.TROPICAL_FISH_PATTERN)) {
+            return -1;
+        }
+        return packedVariant(upgraded);
+    }
+
     private static ItemStack withVariantComponents(ItemStack bucket) {
         if (bucket.has(DataComponents.TROPICAL_FISH_PATTERN)) {
             return bucket;

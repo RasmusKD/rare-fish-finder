@@ -29,5 +29,7 @@
   "text.autoconfig.rarefishfinder.option.hideCommonFishOnXaeroMap": "Hide Common Fish on Xaero's Map",
   "text.autoconfig.rarefishfinder.option.hideCommonFishOnXaeroMap.@Tooltip": "Keeps common tropical fish off Xaero's minimap radar and world map, so only rare ones show.",
   "text.autoconfig.rarefishfinder.option.onlyTropicalFishOnXaeroMap": "Only Show Tropical Fish on Xaero's Map",
-  "text.autoconfig.rarefishfinder.option.onlyTropicalFishOnXaeroMap.@Tooltip": "Hides every other entity from Xaero's minimap radar and world map, leaving only tropical fish. Combine with the option above to see only the rare ones."
+  "text.autoconfig.rarefishfinder.option.onlyTropicalFishOnXaeroMap.@Tooltip": "Hides every other entity from Xaero's minimap radar and world map, leaving only tropical fish. Combine with the option above to see only the rare ones.",
+  "text.autoconfig.rarefishfinder.option.showBucketColors": "Show Colors on Bucket Icons",
+  "text.autoconfig.rarefishfinder.option.showBucketColors.@Tooltip": "Draws the fish's two colors in the corner of tropical fish bucket icons."
 }

@@ -37,6 +37,10 @@ public class TropicalFishConfig implements ConfigData {
 
     @ConfigEntry.Category("tooltip")
     @ConfigEntry.Gui.Tooltip
+    public boolean showBucketColors = true;
+
+    @ConfigEntry.Category("tooltip")
+    @ConfigEntry.Gui.Tooltip
     public boolean showFishInTooltip = true;
 
     @ConfigEntry.Category("tooltip")
