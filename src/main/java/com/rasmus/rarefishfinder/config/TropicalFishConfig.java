@@ -43,7 +43,7 @@ public class TropicalFishConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     public boolean sortFishBuckets = true;
 
-    @ConfigEntry.Category("general")
+    @ConfigEntry.Category("fixes")
     @ConfigEntry.Gui.Tooltip
     public boolean fixFinLines = true;
 
