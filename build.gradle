@@ -39,6 +39,7 @@ dependencies {
     // ClientSort, compile only: the compat class is loaded lazily and only
     // when the mod is present at runtime
     compileOnly "maven.modrinth:clientsort:3.102.5+26.1.2"
+    compileOnly "maven.modrinth:mouse-wheelie:1.16.3+mc26.1"
 }
 
 processResources {
