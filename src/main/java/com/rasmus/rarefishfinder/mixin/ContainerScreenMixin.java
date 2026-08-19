@@ -26,9 +26,13 @@ public class ContainerScreenMixin {
     @Shadow
     protected int topPos;
 
-    @Inject(method = "extractSlots", at = @At("TAIL"))
+    // extractContents TAIL, not extractSlots: the slot items land on a later
+    // batch, so anything submitted inside extractSlots draws behind them.
+    // extractContents ends after the nextStratum call (above every item) but
+    // before tooltips, the exact phase ItemLocks draws its lock icons in.
+    @Inject(method = "extractContents", at = @At("TAIL"))
     private void drawBucketColors(GuiGraphicsExtractor extractor, int mouseX, int mouseY,
-            CallbackInfo ci) {
+            float partialTick, CallbackInfo ci) {
         if (!TropicalFishConfig.get().showBucketColors) {
             return;
         }
@@ -44,8 +48,10 @@ public class ContainerScreenMixin {
             TropicalFish.Variant variant = new TropicalFish.Variant(packed);
             int base = 0xFF000000 | variant.baseColor().getTextureDiffuseColor();
             int pattern = 0xFF000000 | variant.patternColor().getTextureDiffuseColor();
-            int x = leftPos + slot.x;
-            int y = topPos + slot.y;
+            // bottom right corner: buckets never stack and have no durability
+            // bar, so that spot is always free
+            int x = leftPos + slot.x + 8;
+            int y = topPos + slot.y + 11;
             extractor.fill(x, y, x + 8, y + 5, 0xE0202020);
             extractor.fill(x + 1, y + 1, x + 4, y + 4, base);
             extractor.fill(x + 4, y + 1, x + 7, y + 4, pattern);
