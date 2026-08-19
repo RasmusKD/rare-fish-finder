@@ -2,7 +2,7 @@ package com.rasmus.rarefishfinder.mixin;
 
 import com.rasmus.rarefishfinder.config.TropicalFishConfig;
 import com.rasmus.rarefishfinder.tooltip.FishTooltipRenderer;
-import net.minecraft.world.entity.animal.fish.TropicalFish;
+import com.rasmus.rarefishfinder.util.RareFishVariants;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -10,17 +10,17 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * ClientSort compat: compareEqualItems is the tie breaker every sort order
- * falls back to when two stacks are the same item, so this one hook groups
- * tropical fish buckets by pattern, then base color, then pattern color in
- * every sort mode. Skipped silently when ClientSort is not installed.
+ * Mouse Wheelie compat, the sibling of the ClientSort hook: its
+ * compareEqualItems is the tie breaker every middle click sort mode falls
+ * back to for equal items, so this groups tropical fish buckets by
+ * pattern, then base color, then pattern color. Skipped silently when
+ * Mouse Wheelie is not installed.
  */
-@Mixin(targets = "dev.terminalmc.clientsort.client.order.StackComparison", remap = false)
-public class ClientSortComparisonMixin {
+@Mixin(targets = "de.siphalor.mousewheelie.client.util.ItemStackUtils", remap = false)
+public class MouseWheelieComparisonMixin {
 
     @Inject(method = "compareEqualItems", at = @At("HEAD"), cancellable = true, require = 0)
     private static void groupFishBuckets(ItemStack a, ItemStack b,
-            dev.terminalmc.clientsort.client.order.SortContext context,
             CallbackInfoReturnable<Integer> cir) {
         if (!TropicalFishConfig.get().sortFishBuckets) {
             return;
@@ -33,11 +33,10 @@ public class ClientSortComparisonMixin {
         if (packedB < 0) {
             return;
         }
-        int cmp = Integer.compare(com.rasmus.rarefishfinder.util.RareFishVariants.sortKey(packedA),
-                com.rasmus.rarefishfinder.util.RareFishVariants.sortKey(packedB));
+        int cmp = Integer.compare(RareFishVariants.sortKey(packedA),
+                RareFishVariants.sortKey(packedB));
         if (cmp != 0) {
             cir.setReturnValue(cmp);
         }
     }
-
 }

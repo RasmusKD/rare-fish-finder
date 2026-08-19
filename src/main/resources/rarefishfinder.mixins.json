@@ -12,6 +12,7 @@
     "GuiHotbarLegacyMixin",
     "HudHotbarModernMixin",
     "ItemMixin",
+    "MouseWheelieComparisonMixin",
     "TropicalFishLargeModelMixin",
     "TropicalFishSmallModelMixin",
     "XaeroRadarListMixin"

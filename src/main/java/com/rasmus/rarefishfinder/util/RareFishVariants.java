@@ -20,4 +20,15 @@ public final class RareFishVariants {
         );
         return !TropicalFish.COMMON_VARIANTS.contains(variant);
     }
+
+    /**
+     * Grouping key for sorting buckets: pattern, then base color, then
+     * pattern color. Shared by the ClientSort and Mouse Wheelie hooks.
+     */
+    public static int sortKey(int packed) {
+        var variant = new net.minecraft.world.entity.animal.fish.TropicalFish.Variant(packed);
+        return (variant.pattern().ordinal() << 8)
+                | (variant.baseColor().getId() << 4)
+                | variant.patternColor().getId();
+    }
 }
