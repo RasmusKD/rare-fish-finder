@@ -35,5 +35,7 @@
   "text.autoconfig.rarefishfinder.option.sortFishBuckets": "Sort Buckets by Variant",
   "text.autoconfig.rarefishfinder.option.sortFishBuckets.@Tooltip": "With ClientSort installed, sorting groups fish buckets by pattern, then colors.",
   "sortOrder.clientsort.fishPattern": "Fish: Pattern",
-  "sortOrder.clientsort.fishColor": "Fish: Color"
+  "sortOrder.clientsort.fishColor": "Fish: Color",
+  "text.autoconfig.rarefishfinder.option.fixFinLines": "Fix Vanilla Fin Lines",
+  "text.autoconfig.rarefishfinder.option.fixFinLines.@Tooltip": "Removes the stray lines around fish fins, a vanilla bug. Needs a restart."
 }

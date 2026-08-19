@@ -35,5 +35,7 @@
   "text.autoconfig.rarefishfinder.option.sortFishBuckets": "Sortér spande efter variant",
   "text.autoconfig.rarefishfinder.option.sortFishBuckets.@Tooltip": "Med ClientSort installeret grupperer sortering fiskespande efter mønster, så farver.",
   "sortOrder.clientsort.fishPattern": "Fisk: Mønster",
-  "sortOrder.clientsort.fishColor": "Fisk: Farve"
+  "sortOrder.clientsort.fishColor": "Fisk: Farve",
+  "text.autoconfig.rarefishfinder.option.fixFinLines": "Fiks vanilla finne-linjer",
+  "text.autoconfig.rarefishfinder.option.fixFinLines.@Tooltip": "Fjerner de løse streger omkring fiskefinner, en vanilla-bug. Kræver genstart."
 }

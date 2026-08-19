@@ -10,6 +10,8 @@
     "ClientSortComparisonMixin",
     "ContainerScreenMixin",
     "ItemMixin",
+    "TropicalFishLargeModelMixin",
+    "TropicalFishSmallModelMixin",
     "XaeroRadarListMixin"
   ],
   "injectors": {
