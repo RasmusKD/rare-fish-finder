@@ -20,6 +20,7 @@ public class ClientSortComparisonMixin {
 
     @Inject(method = "compareEqualItems", at = @At("HEAD"), cancellable = true, require = 0)
     private static void groupFishBuckets(ItemStack a, ItemStack b,
+            dev.terminalmc.clientsort.client.order.SortContext context,
             CallbackInfoReturnable<Integer> cir) {
         if (!TropicalFishConfig.get().sortFishBuckets) {
             return;
