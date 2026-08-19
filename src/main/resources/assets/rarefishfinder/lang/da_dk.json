@@ -31,7 +31,7 @@
   "text.autoconfig.rarefishfinder.option.onlyTropicalFishOnXaeroMap": "Vis kun tropefisk på Xaero's Map",
   "text.autoconfig.rarefishfinder.option.onlyTropicalFishOnXaeroMap.@Tooltip": "Skjuler alle andre væsner fra Xaeros minimap-radar og verdenskort, så kun tropefisk er tilbage. Kombinér med muligheden ovenfor for kun at se de sjældne.",
   "text.autoconfig.rarefishfinder.option.showBucketColors": "Vis farver på spand-ikoner",
-  "text.autoconfig.rarefishfinder.option.showBucketColors.@Tooltip": "Tegner fiskens to farver i hjørnet af tropefiskespande.",
+  "text.autoconfig.rarefishfinder.option.showBucketColors.@Tooltip": "Tegner fiskens to farver i hjørnet af spande, i menuer og på hotbaren.",
   "text.autoconfig.rarefishfinder.option.sortFishBuckets": "Sortér spande efter variant",
   "text.autoconfig.rarefishfinder.option.sortFishBuckets.@Tooltip": "Med ClientSort installeret grupperer sortering fiskespande efter mønster, så farver.",
   "sortOrder.clientsort.fishPattern": "Fisk: Mønster",
