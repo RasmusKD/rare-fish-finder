@@ -13,6 +13,7 @@ base {
 repositories {
     maven { url "https://maven.shedaniel.me/" }
     maven { url "https://maven.terraformersmc.com/releases/" }
+    maven { url "https://api.modrinth.com/maven" }
 }
 
 loom {
@@ -34,6 +35,10 @@ dependencies {
     // Config and ModMenu
     implementation "me.shedaniel.cloth:cloth-config-fabric:${project.clothconfig_version}"
     implementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+
+    // ClientSort, compile only: the compat class is loaded lazily and only
+    // when the mod is present at runtime
+    compileOnly "maven.modrinth:clientsort:3.102.5+26.1.2"
 }
 
 processResources {

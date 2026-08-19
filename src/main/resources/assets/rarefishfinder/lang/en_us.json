@@ -33,5 +33,7 @@
   "text.autoconfig.rarefishfinder.option.showBucketColors": "Show Colors on Bucket Icons",
   "text.autoconfig.rarefishfinder.option.showBucketColors.@Tooltip": "Draws the fish's two colors in the corner of tropical fish bucket icons.",
   "text.autoconfig.rarefishfinder.option.sortFishBuckets": "Sort Buckets by Variant",
-  "text.autoconfig.rarefishfinder.option.sortFishBuckets.@Tooltip": "With ClientSort installed, sorting groups fish buckets by pattern, then colors."
+  "text.autoconfig.rarefishfinder.option.sortFishBuckets.@Tooltip": "With ClientSort installed, sorting groups fish buckets by pattern, then colors.",
+  "sortOrder.clientsort.fishPattern": "Fish: Pattern",
+  "sortOrder.clientsort.fishColor": "Fish: Color"
 }

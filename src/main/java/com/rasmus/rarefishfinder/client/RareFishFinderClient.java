@@ -67,6 +67,7 @@ public class RareFishFinderClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         LOGGER.info("Rare Fish Finder initialized!");
+        ClientSortCompat.init();
 
         // The Xaero map option only exists when the map does: without the mod
         // the mixin never applies, so showing the toggle would sell a no-op.
