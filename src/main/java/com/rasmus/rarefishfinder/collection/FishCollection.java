@@ -63,12 +63,28 @@ public final class FishCollection {
         }
     }
 
-    public static void addCatch(int packed) {
+    /** Records a catch; true when this variant was not collected before. */
+    public static boolean addCatch(int packed) {
         Entry entry = entryFor(packed);
+        boolean wasNew = !entry.collected;
         entry.collected = true;
         entry.catches++;
         collectedFast.add(packed);
         save();
+        return wasNew;
+    }
+
+    /**
+     * Canonical collection number, 1..TOTAL_VARIANTS: patterns in declaration
+     * order, then base color, then pattern color. The numbering the toast
+     * and the collection screen share.
+     */
+    public static int numberOf(int packed) {
+        var variant = new net.minecraft.world.entity.animal.fish.TropicalFish.Variant(packed);
+        int colors = net.minecraft.world.item.DyeColor.values().length;
+        return variant.pattern().ordinal() * colors * colors
+                + variant.baseColor().getId() * colors
+                + variant.patternColor().getId() + 1;
     }
 
     public static boolean isCollected(int packed) {

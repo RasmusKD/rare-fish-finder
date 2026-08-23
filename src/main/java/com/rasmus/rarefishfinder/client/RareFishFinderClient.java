@@ -3,6 +3,7 @@ package com.rasmus.rarefishfinder.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.rasmus.rarefishfinder.collection.FishCollection;
 import com.rasmus.rarefishfinder.gui.CollectionScreen;
+import com.rasmus.rarefishfinder.gui.NewCatchToast;
 import com.rasmus.rarefishfinder.config.TropicalFishConfig;
 import com.rasmus.rarefishfinder.tooltip.FishTooltip;
 import com.rasmus.rarefishfinder.tooltip.FishTooltipRenderer;
@@ -93,7 +94,12 @@ public class RareFishFinderClient implements ClientModInitializer {
                     fish.setCustomNameVisible(false);
                 }
                 if (level.isClientSide()) {
-                    FishCollection.addCatch(FishCollection.packedOf(fish));
+                    int packed = FishCollection.packedOf(fish);
+                    boolean wasNew = FishCollection.addCatch(packed);
+                    if (wasNew && TropicalFishConfig.get().newCatchToasts) {
+                        Minecraft.getInstance().getToastManager().addToast(new NewCatchToast(
+                                packed, com.rasmus.rarefishfinder.util.RareFishVariants.isRare(fish)));
+                    }
                 }
             }
             return InteractionResult.PASS;

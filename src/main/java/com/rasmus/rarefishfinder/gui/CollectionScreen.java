@@ -173,6 +173,9 @@ public final class CollectionScreen extends Screen {
                     niceName(COLORS[hoverRow].getName()) + " / "
                             + niceName(COLORS[hoverCol].getName()),
                     commonIndex != null ? 0xFFAAAAAA : 0xFFFFFFFF);
+            line = infoLine(extractor, infoX, line,
+                    "No. " + FishCollection.numberOf(packed) + " of " + FishCollection.TOTAL_VARIANTS,
+                    0xFF888888);
             String state = collected ? "Collected" : "Not collected";
             int stateColor = collected ? 0xFF55FF55 : 0xFF888888;
             line = infoLine(extractor, infoX, line, state, stateColor);

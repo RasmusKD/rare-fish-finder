@@ -33,6 +33,10 @@ public class TropicalFishConfig implements ConfigData {
 
     @ConfigEntry.Category("general")
     @ConfigEntry.Gui.Tooltip
+    public boolean newCatchToasts = true;
+
+    @ConfigEntry.Category("general")
+    @ConfigEntry.Gui.Tooltip
     public boolean namesEnabled = true;
 
     @ConfigEntry.Category("tooltip")
