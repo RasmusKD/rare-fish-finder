@@ -74,6 +74,36 @@ public final class FishCollection {
         return wasNew;
     }
 
+    /** Collected count within one pattern's 16x16 color grid. */
+    public static int patternCollected(net.minecraft.world.entity.animal.fish.TropicalFish.Pattern pattern) {
+        var colors = net.minecraft.world.item.DyeColor.values();
+        int n = 0;
+        for (var base : colors) {
+            for (var pat : colors) {
+                if (isCollected(new net.minecraft.world.entity.animal.fish.TropicalFish.Variant(
+                        pattern, base, pat).getPackedId())) {
+                    n++;
+                }
+            }
+        }
+        return n;
+    }
+
+    /** First collected variant of a pattern (the overview's poster fish), or -1. */
+    public static int firstCollected(net.minecraft.world.entity.animal.fish.TropicalFish.Pattern pattern) {
+        var colors = net.minecraft.world.item.DyeColor.values();
+        for (var base : colors) {
+            for (var pat : colors) {
+                int packed = new net.minecraft.world.entity.animal.fish.TropicalFish.Variant(
+                        pattern, base, pat).getPackedId();
+                if (isCollected(packed)) {
+                    return packed;
+                }
+            }
+        }
+        return -1;
+    }
+
     /**
      * Canonical collection number, 1..TOTAL_VARIANTS: patterns in declaration
      * order, then base color, then pattern color. The numbering the toast

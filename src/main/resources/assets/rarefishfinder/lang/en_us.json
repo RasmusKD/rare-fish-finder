@@ -42,5 +42,13 @@
   "sortOrder.clientsort.fishColor": "Fish: Color",
   "text.autoconfig.rarefishfinder.option.fixFinLines": "Fix Vanilla Fin Lines",
   "text.autoconfig.rarefishfinder.option.fixFinLines.@Tooltip": "Removes the stray lines around fish fins, a vanilla bug. Needs a restart.",
-  "text.autoconfig.rarefishfinder.category.fixes": "Fixes"
+  "text.autoconfig.rarefishfinder.category.fixes": "Fixes",
+  "toast.rarefishfinder.dex_complete": "FISHDEX COMPLETE!",
+  "toast.rarefishfinder.dex_complete.line": "All %s variants collected",
+  "toast.rarefishfinder.pattern_complete": "Pattern complete!",
+  "toast.rarefishfinder.pattern_complete.line": "Every %s variant collected",
+  "toast.rarefishfinder.commons_complete": "All commons collected!",
+  "toast.rarefishfinder.commons_complete.line": "Every named variant is yours",
+  "toast.rarefishfinder.solids_complete": "All solids collected!",
+  "toast.rarefishfinder.solids_complete.line": "Every matching-color variant is yours"
 }

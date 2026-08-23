@@ -3,6 +3,7 @@ package com.rasmus.rarefishfinder.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.rasmus.rarefishfinder.collection.FishCollection;
 import com.rasmus.rarefishfinder.gui.CollectionScreen;
+import com.rasmus.rarefishfinder.gui.CelebrationToast;
 import com.rasmus.rarefishfinder.gui.NewCatchToast;
 import com.rasmus.rarefishfinder.config.TropicalFishConfig;
 import com.rasmus.rarefishfinder.tooltip.FishTooltip;
@@ -32,6 +33,57 @@ public class RareFishFinderClient implements ClientModInitializer {
     private static KeyMapping toggleGlowKeyBinding;
     private static KeyMapping toggleNamesKeyBinding;
     private static KeyMapping collectionKeyBinding;
+
+    /**
+     * The toast for a first-time catch: the biggest milestone it completed,
+     * or the plain new-catch popup. Checked largest first, so filling the
+     * whole dex never gets announced as a mere pattern.
+     */
+    private static net.minecraft.client.gui.components.toasts.Toast milestoneToast(int packed, boolean rare) {
+        var variant = new net.minecraft.world.entity.animal.fish.TropicalFish.Variant(packed);
+        int colors = net.minecraft.world.item.DyeColor.values().length;
+        if (FishCollection.collectedTotal() == FishCollection.TOTAL_VARIANTS) {
+            return new CelebrationToast(
+                    net.minecraft.network.chat.Component.translatable("toast.rarefishfinder.dex_complete"),
+                    net.minecraft.network.chat.Component.translatable("toast.rarefishfinder.dex_complete.line",
+                            FishCollection.TOTAL_VARIANTS),
+                    packed);
+        }
+        if (FishCollection.patternCollected(variant.pattern()) == colors * colors) {
+            return new CelebrationToast(
+                    net.minecraft.network.chat.Component.translatable("toast.rarefishfinder.pattern_complete"),
+                    net.minecraft.network.chat.Component.translatable("toast.rarefishfinder.pattern_complete.line",
+                            NewCatchToast.nice(variant.pattern().getSerializedName())),
+                    packed);
+        }
+        if (FishCollection.collectedCommons()
+                == net.minecraft.world.entity.animal.fish.TropicalFish.COMMON_VARIANTS.size()
+                && FishCollection.collectedCommons() > 0
+                && isCommon(packed)) {
+            return new CelebrationToast(
+                    net.minecraft.network.chat.Component.translatable("toast.rarefishfinder.commons_complete"),
+                    net.minecraft.network.chat.Component.translatable("toast.rarefishfinder.commons_complete.line"),
+                    packed);
+        }
+        if (variant.baseColor() == variant.patternColor()
+                && FishCollection.collectedSolids()
+                        == net.minecraft.world.entity.animal.fish.TropicalFish.Pattern.values().length * colors) {
+            return new CelebrationToast(
+                    net.minecraft.network.chat.Component.translatable("toast.rarefishfinder.solids_complete"),
+                    net.minecraft.network.chat.Component.translatable("toast.rarefishfinder.solids_complete.line"),
+                    packed);
+        }
+        return new NewCatchToast(packed, rare);
+    }
+
+    private static boolean isCommon(int packed) {
+        for (var common : net.minecraft.world.entity.animal.fish.TropicalFish.COMMON_VARIANTS) {
+            if (common.getPackedId() == packed) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     private static final KeyMapping.Category RAREFISH_CATEGORY = KeyMapping.Category.register(
             Identifier.fromNamespaceAndPath("rarefishfinder", "category"));
@@ -97,7 +149,7 @@ public class RareFishFinderClient implements ClientModInitializer {
                     int packed = FishCollection.packedOf(fish);
                     boolean wasNew = FishCollection.addCatch(packed);
                     if (wasNew && TropicalFishConfig.get().newCatchToasts) {
-                        Minecraft.getInstance().getToastManager().addToast(new NewCatchToast(
+                        Minecraft.getInstance().getToastManager().addToast(milestoneToast(
                                 packed, com.rasmus.rarefishfinder.util.RareFishVariants.isRare(fish)));
                     }
                 }

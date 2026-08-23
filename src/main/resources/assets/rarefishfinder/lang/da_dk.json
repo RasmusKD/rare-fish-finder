@@ -38,5 +38,17 @@
   "sortOrder.clientsort.fishColor": "Fisk: Farve",
   "text.autoconfig.rarefishfinder.option.fixFinLines": "Fiks vanilla finne-linjer",
   "text.autoconfig.rarefishfinder.option.fixFinLines.@Tooltip": "Fjerner de løse streger omkring fiskefinner, en vanilla-bug. Kræver genstart.",
-  "text.autoconfig.rarefishfinder.category.fixes": "Rettelser"
+  "text.autoconfig.rarefishfinder.category.fixes": "Rettelser",
+  "text.autoconfig.rarefishfinder.option.newCatchToasts": "Popup ved nyt fund",
+  "text.autoconfig.rarefishfinder.option.newCatchToasts.@Tooltip": "Advancement-agtig popup når du fanger en variant første gang. Sjældne varianter får guldramme og challenge-lyd.",
+  "toast.rarefishfinder.new_fish": "Ny fisk indsamlet!",
+  "toast.rarefishfinder.new_rare": "Sjælden fisk indsamlet!",
+  "toast.rarefishfinder.dex_complete": "FISKEDEX FULDENDT!",
+  "toast.rarefishfinder.dex_complete.line": "Alle %s varianter indsamlet",
+  "toast.rarefishfinder.pattern_complete": "Mønster fuldendt!",
+  "toast.rarefishfinder.pattern_complete.line": "Alle %s-varianter indsamlet",
+  "toast.rarefishfinder.commons_complete": "Alle almindelige indsamlet!",
+  "toast.rarefishfinder.commons_complete.line": "Alle navngivne varianter er dine",
+  "toast.rarefishfinder.solids_complete": "Alle ensfarvede indsamlet!",
+  "toast.rarefishfinder.solids_complete.line": "Alle varianter med ens farver er dine"
 }

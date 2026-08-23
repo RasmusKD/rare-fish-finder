@@ -63,7 +63,7 @@ public class NewCatchToast implements Toast {
         return null;
     }
 
-    private static String nice(String colorName) {
+    public static String nice(String colorName) {
         String spaced = colorName.replace('_', ' ');
         return Character.toUpperCase(spaced.charAt(0)) + spaced.substring(1);
     }
