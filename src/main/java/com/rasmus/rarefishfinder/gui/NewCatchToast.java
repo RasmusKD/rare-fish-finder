@@ -49,9 +49,13 @@ public class NewCatchToast implements Toast {
         if (commonIndex != null) {
             return Component.translatable("entity.minecraft.tropical_fish.predefined." + commonIndex);
         }
+        // Vanilla's own color keys, so the line localizes with the game
+        // ("Hvid / Limegrøn" on a Danish client, not "White / Lime").
         TropicalFish.Variant variant = new TropicalFish.Variant(packed);
-        return Component.literal(nice(variant.baseColor().getName()) + " / "
-                + nice(variant.patternColor().getName()));
+        return Component.empty()
+                .append(Component.translatable("color.minecraft." + variant.baseColor().getName()))
+                .append(" / ")
+                .append(Component.translatable("color.minecraft." + variant.patternColor().getName()));
     }
 
     private static @Nullable Integer commonIndexOf(int packed) {
@@ -63,10 +67,6 @@ public class NewCatchToast implements Toast {
         return null;
     }
 
-    public static String nice(String colorName) {
-        String spaced = colorName.replace('_', ' ');
-        return Character.toUpperCase(spaced.charAt(0)) + spaced.substring(1);
-    }
 
     @Override
     public Toast.Visibility getWantedVisibility() {

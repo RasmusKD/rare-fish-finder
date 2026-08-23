@@ -53,7 +53,9 @@ public class RareFishFinderClient implements ClientModInitializer {
             return new CelebrationToast(
                     net.minecraft.network.chat.Component.translatable("toast.rarefishfinder.pattern_complete"),
                     net.minecraft.network.chat.Component.translatable("toast.rarefishfinder.pattern_complete.line",
-                            NewCatchToast.nice(variant.pattern().getSerializedName())),
+                            net.minecraft.network.chat.Component.translatable(
+                                    "entity.minecraft.tropical_fish.type."
+                                            + variant.pattern().getSerializedName())),
                     packed);
         }
         if (FishCollection.collectedCommons()
