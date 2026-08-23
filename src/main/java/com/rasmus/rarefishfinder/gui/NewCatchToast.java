@@ -92,7 +92,15 @@ public class NewCatchToast implements Toast {
                 rare ? RARE_TITLE_COLOR : COMMON_TITLE_COLOR, false);
         graphics.text(font, font.split(line, 125).get(0), 30, 18, 0xFFFFFFFF, false);
         TropicalFishConfig config = TropicalFishConfig.get();
-        FishTooltipRenderer.extractFish(graphics, packed, 4, 4, 28, 28, 12,
+        // The entity submit takes absolute screen coordinates and ignores the
+        // pose (unlike text and sprites), while the toast manager positions
+        // this toast via a pose translation - so the box must be offset by
+        // the pose's current translation or the fish renders clipped in the
+        // screen corner instead of in the toast.
+        var pose = graphics.pose();
+        int ox = Math.round(pose.m20);
+        int oy = Math.round(pose.m21);
+        FishTooltipRenderer.extractFish(graphics, packed, ox + 4, oy + 4, ox + 28, oy + 28, 12,
                 config.tooltipFishYaw, config.tooltipFishTilt);
     }
 }

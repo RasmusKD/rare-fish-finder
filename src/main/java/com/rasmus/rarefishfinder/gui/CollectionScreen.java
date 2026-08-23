@@ -37,9 +37,7 @@ public final class CollectionScreen extends Screen {
         return map;
     }
 
-    /** -1 = the overview front page; 0..11 = one pattern's color grid. */
-    private static final int OVERVIEW = -1;
-    private int patternIndex = OVERVIEW;
+    private int patternIndex;
     private int panelX;
     private int panelY;
     private int gridX;
@@ -68,8 +66,7 @@ public final class CollectionScreen extends Screen {
     }
 
     private void switchPattern(int direction) {
-        // 13 pages: the overview, then the 12 patterns.
-        patternIndex = Math.floorMod(patternIndex + 1 + direction, PATTERNS.length + 1) - 1;
+        patternIndex = Math.floorMod(patternIndex + direction, PATTERNS.length);
     }
 
     // Drawn in the background pass so the buttons, which the base class
@@ -85,10 +82,6 @@ public final class CollectionScreen extends Screen {
                 0xF0100C18);
         extractor.fill(panelX, panelY, panelX + panelWidth, panelY + panelHeight, 0xFF1C1426);
 
-        if (patternIndex == OVERVIEW) {
-            extractOverview(extractor, mouseX, mouseY);
-            return;
-        }
         TropicalFish.Pattern pattern = PATTERNS[patternIndex];
 
         // header: pattern name centered over the grid, between the arrows
@@ -217,91 +210,6 @@ public final class CollectionScreen extends Screen {
                         + PATTERNS.length * COLORS.length, 0xFFFF77FF);
         infoLine(extractor, infoX, progressY + 44,
                 "Catches: " + FishCollection.totalCatches(), 0xFFAAAAFF);
-    }
-
-    // ------------------------------------------------------------------
-    // Overview: the front page. All 12 patterns with a live poster fish,
-    // progress and a bar; click one to open its grid. What the advancement
-    // "fishdex" datapacks build 13 tabs and a resource pack for, without
-    // needing either or any server-side install.
-    // ------------------------------------------------------------------
-
-    private static final int OV_COLS = 3;
-    private static final int OV_COL_W = (GRID + PANEL_PAD + INFO_WIDTH) / OV_COLS;
-    private static final int OV_ROW_H = GRID / 4;
-
-    private void extractOverview(GuiGraphicsExtractor extractor, int mouseX, int mouseY) {
-        int full = COLORS.length * COLORS.length;
-        int total = FishCollection.collectedTotal();
-        boolean dexComplete = total == FishCollection.TOTAL_VARIANTS;
-
-        Component header = Component.literal(dexComplete ? "Fish Collection - COMPLETE" : "Fish Collection");
-        extractor.text(this.font, header.getVisualOrderText(),
-                gridX + (GRID + PANEL_PAD + INFO_WIDTH - this.font.width(header)) / 2,
-                panelY + PANEL_PAD + 4, dexComplete ? 0xFFFFD700 : 0xFFFFFFFF, true);
-
-        TropicalFishConfig config = TropicalFishConfig.get();
-        for (int i = 0; i < PATTERNS.length; i++) {
-            int ex = gridX + (i % OV_COLS) * OV_COL_W;
-            int ey = gridY + (i / OV_COLS) * OV_ROW_H;
-            boolean hover = mouseX >= ex && mouseX < ex + OV_COL_W - 2
-                    && mouseY >= ey && mouseY < ey + OV_ROW_H - 2;
-            extractor.fill(ex, ey, ex + OV_COL_W - 2, ey + OV_ROW_H - 2,
-                    hover ? 0xFF2E2542 : 0xFF241D33);
-
-            int collected = FishCollection.patternCollected(PATTERNS[i]);
-            int poster = FishCollection.firstCollected(PATTERNS[i]);
-            if (poster >= 0) {
-                FishTooltipRenderer.extractFish(extractor, poster,
-                        ex + 2, ey + 2, ex + 40, ey + OV_ROW_H - 4, 22,
-                        config.tooltipFishYaw, config.tooltipFishTilt);
-            } else {
-                Component unknown = Component.literal("?");
-                extractor.text(this.font, unknown.getVisualOrderText(),
-                        ex + 18, ey + OV_ROW_H / 2 - 5, 0xFF666666, true);
-            }
-
-            boolean done = collected == full;
-            infoLine(extractor, ex + 42, ey + 6, niceName(PATTERNS[i].getSerializedName()),
-                    done ? 0xFFFFD700 : 0xFFFFFFFF);
-            infoLine(extractor, ex + 42, ey + 17, collected + "/" + full,
-                    done ? 0xFFFFD700 : 0xFFAAAAAA);
-            int barW = OV_COL_W - 48;
-            int fillW = barW * collected / full;
-            extractor.fill(ex + 42, ey + 30, ex + 42 + barW, ey + 34, 0xFF13101C);
-            if (fillW > 0) {
-                extractor.fill(ex + 42, ey + 30, ex + 42 + fillW, ey + 34,
-                        done ? 0xFFFFD700 : 0xFF55FF55);
-            }
-        }
-
-        infoLine(extractor, gridX,
-                gridY + GRID + 2 - 11,
-                "Total: " + total + "/" + FishCollection.TOTAL_VARIANTS
-                        + "   Commons: " + FishCollection.collectedCommons() + "/"
-                        + TropicalFish.COMMON_VARIANTS.size()
-                        + "   Solids: " + FishCollection.collectedSolids() + "/"
-                        + PATTERNS.length * COLORS.length
-                        + "   Catches: " + FishCollection.totalCatches(),
-                0xFFAAAAFF);
-    }
-
-    @Override
-    public boolean mouseClicked(net.minecraft.client.input.MouseButtonEvent event, boolean doubleClick) {
-        if (patternIndex == OVERVIEW) {
-            int mx = (int) event.x();
-            int my = (int) event.y();
-            if (mx >= gridX && my >= gridY && my < gridY + 4 * OV_ROW_H) {
-                int col = (mx - gridX) / OV_COL_W;
-                int row = (my - gridY) / OV_ROW_H;
-                int i = row * OV_COLS + col;
-                if (col < OV_COLS && i >= 0 && i < PATTERNS.length) {
-                    patternIndex = i;
-                    return true;
-                }
-            }
-        }
-        return super.mouseClicked(event, doubleClick);
     }
 
     private int infoLine(GuiGraphicsExtractor extractor, int x, int y, String text, int color) {
