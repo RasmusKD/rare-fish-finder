@@ -13,6 +13,8 @@ any renamed member is a hard crash on the other version. Add new finds here.
 | Screen effect helpers | `renderScreenEffect`, `renderFire`, `renderWater`, `renderTex` | `submit`, `submitFire`, `submitWater`, `submitBlockSprite` | mixin pair + plugin |
 | Rain splash + sound | `WeatherEffectRenderer.tickRainParticles` | `ClientLevel.tickWeatherEffects` | mixin pair + plugin |
 | Gamerule ids | `doDaylightCycle`, `doWeatherCycle` | `advance_time`, `advance_weather` | server commands only |
+| `AdvancementsScreen` extract methods | `extractInside(G,xo,yo)`, `extractWindow(G,xo,yo,mouseX,mouseY)`, `extractTooltips(G,mouseX,mouseY,xo,yo)` | origin dropped from all three: `extractInside(G)`, `extractWindow(G,mouseX,mouseY)`, `extractTooltips(G,mouseX,mouseY)` | mixin pair + plugin; recompute the origin from the screen size |
+| Toast manager | `Minecraft.getToastManager()` | moved to `Minecraft.gui.toastManager()`, the Minecraft accessor is gone | resolve by name (`client/Toasts.java`) |
 
 Identical in both, but not where you'd expect:
 
@@ -25,6 +27,15 @@ Identical in both, but not where you'd expect:
 - Vanilla already has settings for vignette, darkness pulsing, FOV
   effects, clouds, menu blur and lightning flashes (Accessibility).
   Don't duplicate them.
+
+The two rows above are 2.8.0's crash: the Fish Collection tab was written and
+tested against 26.1.2 only and hard-crashed 26.2 at `Initializing game`. Note
+the shape of the trap. On 26.2 the two ints on `extractWindow` are the MOUSE,
+not the origin (vanilla forwards `extractRenderState`'s own mouseX/mouseY), so
+dropping two parameters to make the descriptor fit compiles, loads, and then
+draws the tab wherever the cursor is. A descriptor that merely FITS is not the
+same as one that means the same thing; check the call site with `javap -c`, not
+just the arity.
 
 Verifying: both mojmap jars sit in
 `~/.gradle/caches/fabric-loom/minecraftMaven/net/minecraft/minecraft-merged-deobf/`.

@@ -8,9 +8,21 @@ import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 /**
- * 26.1 calls the HUD class Gui, 26.2 renamed it Hud but kept a different
- * Gui class around, so the hotbar mixin pair is gated on the Minecraft
- * version string instead of class presence.
+ * Version-gated mixin pairs. Both pairs split on the same question, so they
+ * share one predicate:
+ *
+ * <ul>
+ *   <li>26.1 calls the HUD class Gui; 26.2 renamed it Hud but kept a
+ *       different Gui class around, so class presence cannot tell them apart
+ *       and the version string does.</li>
+ *   <li>AdvancementsScreen's extract methods carry the window origin on 26.1
+ *       and not on 26.2, which is a descriptor difference: applying the wrong
+ *       one of the pair is a hard crash at mixin apply, not a soft failure.</li>
+ * </ul>
+ *
+ * <p>Anything gated here needs BOTH halves listed in the mixin config; a half
+ * that is never selected is dead, and a half that is always selected defeats
+ * the gate.
  */
 public class RareFishFinderMixinPlugin implements IMixinConfigPlugin {
 
@@ -22,10 +34,10 @@ public class RareFishFinderMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        if (mixinClassName.endsWith("GuiHotbarLegacyMixin")) {
+        if (mixinClassName.endsWith("LegacyMixin")) {
             return isLegacyGui();
         }
-        if (mixinClassName.endsWith("HudHotbarModernMixin")) {
+        if (mixinClassName.endsWith("ModernMixin")) {
             return !isLegacyGui();
         }
         return true;

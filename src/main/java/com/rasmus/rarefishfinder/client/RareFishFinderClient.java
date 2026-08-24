@@ -151,7 +151,7 @@ public class RareFishFinderClient implements ClientModInitializer {
                     int packed = FishCollection.packedOf(fish);
                     boolean wasNew = FishCollection.addCatch(packed);
                     if (wasNew && TropicalFishConfig.get().newCatchToasts) {
-                        Minecraft.getInstance().getToastManager().addToast(milestoneToast(
+                        Toasts.show(milestoneToast(
                                 packed, com.rasmus.rarefishfinder.util.RareFishVariants.isRare(fish)));
                     }
                 }
