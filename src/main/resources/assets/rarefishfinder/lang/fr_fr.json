@@ -4,11 +4,11 @@
   "key.rarefishfinder.collection": "Ouvrir la collection",
   "key.category.rarefishfinder.category": "Rare Fish Finder",
   "text.autoconfig.rarefishfinder.title": "Rare Fish Finder Configuration",
-  "text.autoconfig.rarefishfinder.category.general": "Générale",
+  "text.autoconfig.rarefishfinder.category.general": "Général",
   "text.autoconfig.rarefishfinder.category.tooltip": "Infobulle",
   "text.autoconfig.rarefishfinder.category.collection": "Collection",
   "text.autoconfig.rarefishfinder.category.xaero": "Xaero's Map",
-  "text.autoconfig.rarefishfinder.option.glowMode": "Surbrillance Mode",
+  "text.autoconfig.rarefishfinder.option.glowMode": "Mode de surbrillance",
   "text.autoconfig.rarefishfinder.option.glowMode.@Tooltip": "Désactivé : pas de surbrillance. Poissons rares : seules les variantes rares brillent. Tous les poissons tropicaux : tout brille, les rares dans la couleur choisie et les communs en gris.",
   "text.autoconfig.rarefishfinder.option.glowOnlyUncollected": "Surbrillance uniquement pour les non collectés",
   "text.autoconfig.rarefishfinder.option.glowOnlyUncollected.@Tooltip": "Les poissons dont la variante est déjà dans votre collection ne sont plus en surbrillance, afin de ne montrer que ceux qu'il vous manque.",
@@ -48,7 +48,7 @@
   "toast.rarefishfinder.pattern_complete": "Motif complété !",
   "toast.rarefishfinder.pattern_complete.line": "Toutes les variantes %s ont été collectées",
   "toast.rarefishfinder.commons_complete": "Tous les communs collectés !",
-  "toast.rarefishfinder.commons_complete.line": "Toutes les variantes communs sont à vous",
+  "toast.rarefishfinder.commons_complete.line": "Toutes les variantes communes sont à vous",
   "toast.rarefishfinder.solids_complete": "Tous les unis collectés !",
-  "toast.rarefishfinder.solids_complete.line": "Toutes les variantes de coueur unie sont à vous"
+  "toast.rarefishfinder.solids_complete.line": "Toutes les variantes de couleur unie sont à vous"
 }

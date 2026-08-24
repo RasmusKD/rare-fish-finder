@@ -22,3 +22,12 @@ tropical fish so the map only shows what you are hunting.
 
 Minecraft 26.1+, Fabric API and Cloth Config. Mod Menu recommended, Xaero's
 Minimap optional.
+
+## Translations
+
+- Danish, English: Rasmus
+- French: [MrCookie112](https://github.com/MrCookie112)
+
+Translations are very welcome. Copy
+`src/main/resources/assets/rarefishfinder/lang/en_us.json`, translate the
+values, and open a PR or attach the file to an issue.
