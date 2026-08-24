@@ -113,3 +113,23 @@ Verifying: both mojmap jars sit in
 Run `javap -p` against BOTH before referencing anything directly. Before a
 release, audit every `net/minecraft` reference in the built jar the same
 way. 2.5.2 crashed on 26.2 because only one class got audited.
+
+## Compat mixins against other mods
+
+A `@Unique static final` field declared in a mixin is merged into the TARGET
+class and initialised in ITS `<clinit>`. That is fine for a vanilla screen the
+game loads at the right moment, and a trap for a third-party one: Better
+Advancements class-loads its screen from its config handler during
+`onInitializeClient`, so an `ItemStack` held in our mixin was constructed
+before item components were bound and killed the game at startup with
+"Components not bound yet" - for every user of that mod, and only for them.
+
+Hold such values in an ordinary class of ours and reach through a static
+accessor (`FishTabView.icon()`). That class is not loaded until something
+renders, which is well after binding. The vanilla tab mixins never hit this
+only because their state already lived in FishTabView.
+
+Gate every mod-specific mixin on the mod actually being present
+(`FabricLoader.isModLoaded`, see RareFishFinderMixinPlugin). Mixin aborts the
+whole config when a target class is missing, so one ungated compat mixin takes
+every other mixin in this mod down with it.

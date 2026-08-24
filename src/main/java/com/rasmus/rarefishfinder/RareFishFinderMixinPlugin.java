@@ -40,6 +40,12 @@ public class RareFishFinderMixinPlugin implements IMixinConfigPlugin {
         if (mixinClassName.endsWith("ModernMixin")) {
             return !isLegacyGui();
         }
+        if (mixinClassName.endsWith("BetterAdvancementsScreenMixin")) {
+            // Its target class ships with an optional mod. Mixin would abort
+            // the whole config on a missing target, taking every other mixin
+            // here down with it, so this asks before it is looked up.
+            return FabricLoader.getInstance().isModLoaded("betteradvancements");
+        }
         return true;
     }
 

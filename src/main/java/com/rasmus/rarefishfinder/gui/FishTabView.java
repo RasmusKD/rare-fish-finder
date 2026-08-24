@@ -44,6 +44,7 @@ public final class FishTabView {
     public static final int WINDOW_HEIGHT = 140;
 
     private static final ItemStack ICON = new ItemStack(Items.TROPICAL_FISH_BUCKET);
+
     private static final Identifier TAB_FIRST = Identifier.withDefaultNamespace("advancements/tab_above_left");
     private static final Identifier TAB_FIRST_SEL = Identifier.withDefaultNamespace("advancements/tab_above_left_selected");
     private static final Identifier TAB_MIDDLE = Identifier.withDefaultNamespace("advancements/tab_above_middle");
@@ -62,6 +63,21 @@ public final class FishTabView {
     private static final int GRID_Y = 4;
     private static final int STEP_X = 43;
     private static final int STEP_Y = 39;
+
+    /**
+     * The tab icon, for compat mixins that must not hold one themselves.
+     *
+     * <p>A `@Unique static final` ItemStack declared inside a mixin is merged
+     * into the TARGET class and initialised in its `&lt;clinit&gt;`. If anything
+     * class-loads that target during mod init - Better Advancements loads its
+     * screen from its config handler - the stack is constructed before item
+     * components are bound and the game dies with "Components not bound yet".
+     * Reaching through here instead keeps the construction in this class, which
+     * is not loaded until something actually renders.
+     */
+    public static ItemStack icon() {
+        return ICON;
+    }
 
     private boolean selected;
 

@@ -40,6 +40,14 @@ dependencies {
     // when the mod is present at runtime
     compileOnly "maven.modrinth:clientsort:3.102.5+26.1.2"
     compileOnly "maven.modrinth:mouse-wheelie:1.16.3+mc26.1"
+    // Better Advancements substitutes its own screen for the vanilla one, so
+    // the Fish Collection tab needs a second mixin against THEIR screen or it
+    // silently disappears for their users. compileOnly: their jar is never
+    // shipped, and the mixin is gated on the mod being present at runtime.
+    // Their Common sourceset is compiled once and reused across Minecraft
+    // versions (verified: BetterAdvancementsScreen.class is byte-identical in
+    // their 26.1.2 and 26.2 jars), so one coordinate serves both our legs.
+    compileOnly "maven.modrinth:better-advancements:0.6.0.72"
 }
 
 processResources {

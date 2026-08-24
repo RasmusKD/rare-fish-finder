@@ -10,6 +10,7 @@
     "ClientSortComparisonMixin",
     "AdvancementsScreenLegacyMixin",
     "AdvancementsScreenModernMixin",
+    "BetterAdvancementsScreenMixin",
     "ContainerScreenMixin",
     "GuiHotbarLegacyMixin",
     "HudHotbarModernMixin",
