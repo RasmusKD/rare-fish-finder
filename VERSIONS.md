@@ -38,6 +38,36 @@ Tag releases as `vX.Y.Z` and nothing else: mc-publish derives the Modrinth
 version name from the tag, so `v2.8.1-release` published a version called
 "2.8.1-release".
 
+### Known red: 26.2 cannot be set up from a cold cache (as of 2026-08-24)
+
+The `verify (26.2)` leg fails in CI with:
+
+```
+Failed to setup Minecraft, java.lang.RuntimeException:
+Failed to apply transformation to net/minecraft/data/tags/TagAppender.class
+```
+
+This is Loom failing to PREPARE Minecraft 26.2, before any of this mod's code is
+compiled. It is not a divergence bug and not something a code change here fixes.
+
+Why it passes locally and fails in CI: `loom_version=1.17-SNAPSHOT` is a moving
+target. The local `~/.gradle/caches/fabric-loom/.../26.2/` jar was prepared on
+2026-07-26 by an older snapshot and has been reused ever since, so the failing
+transformation step never runs. CI starts cold every time and hits it.
+
+The uncomfortable consequence: **a fresh clone currently cannot build for 26.2
+on this machine or any other.** The 2.8.1 fix itself is verified (it compiled
+and launched on both versions against the cached 26.2 jar) - but that
+verification is not reproducible from scratch until this is resolved.
+
+Likely fix: pin `loom_version` to a specific build that can set up 26.2 cold,
+instead of `1.17-SNAPSHOT`. `1.17.17` and `1.17.19` are both in the local cache
+and one of them prepared the July jar. Untested - CI is the only honest way to
+find out which, since a warm local cache cannot tell the difference.
+
+Do NOT make the 26.2 leg `continue-on-error` to get the board green. That
+converts the one check that would have caught 2.5.2 and 2.8.0 into decoration.
+
 | What | 26.1.x | 26.2 | Fix |
 |---|---|---|---|
 | HUD class | `client.gui.Gui` | `client.gui.Hud`, members identical | mixin pair + `ClearSightMixinPlugin` |
