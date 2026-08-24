@@ -51,8 +51,14 @@ public final class CollectionScreen extends Screen {
     }
 
     public CollectionScreen(net.minecraft.client.gui.screens.Screen parent) {
+        this(parent, 0);
+    }
+
+    /** Opens directly on one pattern's grid (the advancement tab drill-down). */
+    public CollectionScreen(net.minecraft.client.gui.screens.Screen parent, int patternIndex) {
         super(Component.literal("Fish Collection"));
         this.parent = parent;
+        this.patternIndex = Math.floorMod(patternIndex, PATTERNS.length);
     }
 
     @Override
