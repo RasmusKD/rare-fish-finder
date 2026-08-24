@@ -15,7 +15,7 @@
   "text.autoconfig.rarefishfinder.option.newCatchToasts": "Alerte de nouvelle capture",
   "text.autoconfig.rarefishfinder.option.newCatchToasts.@Tooltip": "Affichage d'une alerte de progrès lorsque vous capturez une variante pour la première fois. Les variantes rares ont un cadre doré et le son des défis.",
   "toast.rarefishfinder.new_fish": "Nouveau poisson collecté !",
-  "toast.rarefishfinder.new_rare": "Poisson rare collecté !!",
+  "toast.rarefishfinder.new_rare": "Poisson rare collecté !",
   "text.autoconfig.rarefishfinder.option.namesEnabled": "Activer les noms",
   "text.autoconfig.rarefishfinder.option.namesEnabled.@Tooltip": "Affiche les informations de motif et de couleur au-dessus des poissons tropicaux rares.",
   "text.autoconfig.rarefishfinder.option.showFishInTooltip": "Afficher le poisson dans l'infobulle du seau",
