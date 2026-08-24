@@ -43,8 +43,21 @@ public final class CollectionScreen extends Screen {
     private int gridX;
     private int gridY;
 
+    /** Where Esc returns to; null closes to the game (the B key path). */
+    private final net.minecraft.client.gui.screens.Screen parent;
+
     public CollectionScreen() {
+        this(null);
+    }
+
+    public CollectionScreen(net.minecraft.client.gui.screens.Screen parent) {
         super(Component.literal("Fish Collection"));
+        this.parent = parent;
+    }
+
+    @Override
+    public void onClose() {
+        this.minecraft.setScreenAndShow(parent);
     }
 
     @Override
