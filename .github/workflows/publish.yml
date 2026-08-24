@@ -44,7 +44,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        minecraft: ["26.1.2", "26.2"]
+        # Minecraft and Fabric API move TOGETHER. A 26.1 Fabric API against
+        # 26.2 does not merely mismatch at runtime: its interface injection
+        # (FabricTagAppender -> TagAppender) fails during Loom's setup, before
+        # a line of this mod compiles, with an error that reads like a Loom
+        # bug. Override one without the other and the leg is red for a reason
+        # that has nothing to do with the code under test.
+        include:
+          - minecraft: "26.1.2"
+            fabric: "0.155.2+26.1.2"
+          - minecraft: "26.2"
+            fabric: "0.158.0+26.2"
     steps:
       - uses: actions/checkout@v7
 
@@ -56,7 +66,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
 
       - name: Build against Minecraft ${{ matrix.minecraft }}
-        run: ./gradlew build -Pminecraft_version=${{ matrix.minecraft }}
+        run: ./gradlew build -Pminecraft_version=${{ matrix.minecraft }} -Pfabric_version=${{ matrix.fabric }}
 
   publish:
     needs: verify

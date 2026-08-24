@@ -38,32 +38,38 @@ Tag releases as `vX.Y.Z` and nothing else: mc-publish derives the Modrinth
 version name from the tag, so `v2.8.1-release` published a version called
 "2.8.1-release".
 
-### Known red: 26.2 cannot be set up from a cold cache (as of 2026-08-24)
+### Minecraft and Fabric API move TOGETHER
 
-The `verify (26.2)` leg fails in CI with:
+Overriding `minecraft_version` alone is not enough, and the way it fails is
+designed to mislead. Building 26.2 while `fabric_version` still names a 26.1
+build dies during Loom's Minecraft SETUP, before a line of this mod compiles:
 
 ```
-Failed to setup Minecraft, java.lang.RuntimeException:
-Failed to apply transformation to net/minecraft/data/tags/TagAppender.class
+Failed to setup Minecraft: Failed to apply transformation to
+net/minecraft/data/tags/TagAppender.class
+Caused by: Interface .../FabricTagAppender attempted to use a type variable
+named E which is not present in the TagAppender class
 ```
 
-This is Loom failing to PREPARE Minecraft 26.2, before any of this mod's code is
-compiled. It is not a divergence bug and not something a code change here fixes.
+That reads like a Loom bug and is not one. It is Fabric API's INTERFACE
+INJECTION: `FabricTagAppender` injects into Minecraft's `TagAppender`, whose
+generics changed in 26.2, so a 26.1 Fabric API cannot be injected into a 26.2
+Minecraft. Pinning or downgrading Loom does nothing - all of `1.17-SNAPSHOT`,
+`1.17.19` and `1.17.17` fail identically. Pair the two versions and it builds
+cold on both:
 
-Why it passes locally and fails in CI: `loom_version=1.17-SNAPSHOT` is a moving
-target. The local `~/.gradle/caches/fabric-loom/.../26.2/` jar was prepared on
-2026-07-26 by an older snapshot and has been reused ever since, so the failing
-transformation step never runs. CI starts cold every time and hits it.
+| Minecraft | Fabric API |
+|---|---|
+| 26.1.2 | 0.155.2+26.1.2 |
+| 26.2 | 0.158.0+26.2 |
 
-The uncomfortable consequence: **a fresh clone currently cannot build for 26.2
-on this machine or any other.** The 2.8.1 fix itself is verified (it compiled
-and launched on both versions against the cached 26.2 jar) - but that
-verification is not reproducible from scratch until this is resolved.
+The CI matrix sets both per leg for exactly this reason.
 
-Likely fix: pin `loom_version` to a specific build that can set up 26.2 cold,
-instead of `1.17-SNAPSHOT`. `1.17.17` and `1.17.19` are both in the local cache
-and one of them prepared the July jar. Untested - CI is the only honest way to
-find out which, since a warm local cache cannot tell the difference.
+Note the trap for local work: once Loom has cached a successfully-prepared
+Minecraft jar, the failing injection step never runs again, so a warm machine
+builds a mismatched pair happily while CI fails every time. `--refresh-
+dependencies` reproduces CI's view. That gap is why this looked like an
+unfixable upstream bug for an afternoon.
 
 Do NOT make the 26.2 leg `continue-on-error` to get the board green. That
 converts the one check that would have caught 2.5.2 and 2.8.0 into decoration.
