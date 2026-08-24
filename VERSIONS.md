@@ -3,6 +3,41 @@
 One jar runs on both versions. The runtime uses mojmap names directly, so
 any renamed member is a hard crash on the other version. Add new finds here.
 
+## This has now shipped broken twice, so read this part
+
+2.5.2 and 2.8.0 both compiled cleanly, both were tested by hand, and both
+crashed on 26.2 in the wild. Neither author was careless; both simply built
+against the version their `gradle.properties` happened to name, and nothing
+checked the other one. The table below existed for both incidents and did not
+prevent either, because a table only helps someone who already suspects there
+is something to look up.
+
+So the rule is not "remember to check". The rule is:
+
+**CI builds against both 26.1.2 and 26.2 on every push, and `publish` cannot
+run unless both succeed** (`.github/workflows/publish.yml`, the `verify` job).
+That gate is the actual protection. If you ever find yourself disabling it to
+get a release out, you are about to reproduce 2.8.0.
+
+What the gate does NOT catch, and what still needs a human:
+
+- **Mixin `@Inject` descriptors are resolved at RUNTIME, not compile time.** A
+  mixin targeting a signature that only exists on one version compiles happily
+  and dies at `Initializing game` on the other. That was the whole 2.8.0 crash.
+  After touching any mixin, LAUNCH both versions (`./gradlew runClient`, once
+  per `minecraft_version`) and confirm the game reaches the main menu. To run
+  26.2 in dev you must also set `fabric_version` to a 26.2 build; the 26.1 one
+  refuses to load.
+- **A descriptor that FITS is not one that MEANS the same thing.** See the
+  `extractWindow` row below: on 26.2 its two ints are the mouse, not the window
+  origin, so "delete two parameters until mixin stops complaining" produces a
+  tab that renders at the cursor. Check the call site with `javap -c`, not just
+  the arity with `javap -p`.
+
+Tag releases as `vX.Y.Z` and nothing else: mc-publish derives the Modrinth
+version name from the tag, so `v2.8.1-release` published a version called
+"2.8.1-release".
+
 | What | 26.1.x | 26.2 | Fix |
 |---|---|---|---|
 | HUD class | `client.gui.Gui` | `client.gui.Hud`, members identical | mixin pair + `ClearSightMixinPlugin` |
