@@ -67,7 +67,9 @@ public final class CelebrationToast implements Toast {
         var pose = graphics.pose();
         int ox = Math.round(pose.m20);
         int oy = Math.round(pose.m21);
-        FishTooltipRenderer.extractFish(graphics, packed, ox + 4, oy + 4, ox + 28, oy + 28, 12,
+        // Size follows the hover-preview ratio (scale ~0.9x the box height);
+        // 12 in a 24px box rendered the fish tiny.
+        FishTooltipRenderer.extractFish(graphics, packed, ox + 2, oy + 2, ox + 30, oy + 30, 24,
                 config.tooltipFishYaw, config.tooltipFishTilt);
     }
 }
