@@ -4,7 +4,7 @@
   "key.rarefishfinder.collection": "Ouvrir la collection",
   "key.category.rarefishfinder.category": "Rare Fish Finder",
   "text.autoconfig.rarefishfinder.title": "Rare Fish Finder Configuration",
-  "text.autoconfig.rarefishfinder.category.general": "Générale",
+  "text.autoconfig.rarefishfinder.category.general": "Général",
   "text.autoconfig.rarefishfinder.category.tooltip": "Infobulle",
   "text.autoconfig.rarefishfinder.category.collection": "Collection",
   "text.autoconfig.rarefishfinder.category.xaero": "Xaero's Map",
@@ -47,8 +47,8 @@
   "toast.rarefishfinder.dex_complete.line": "Les %s variantes ont été collectées",
   "toast.rarefishfinder.pattern_complete": "Motif complété !",
   "toast.rarefishfinder.pattern_complete.line": "Toutes les variantes %s ont été collectées",
-  "toast.rarefishfinder.commons_complete": "Tous les communs collectés !",
-  "toast.rarefishfinder.commons_complete.line": "Toutes les variantes communs sont à vous",
+  "toast.rarefishfinder.commons_complete": "Tous les communes collectés !",
+  "toast.rarefishfinder.commons_complete.line": "Toutes les variantes communes sont à vous",
   "toast.rarefishfinder.solids_complete": "Tous les unis collectés !",
   "toast.rarefishfinder.solids_complete.line": "Toutes les variantes de coueur unie sont à vous"
 }
