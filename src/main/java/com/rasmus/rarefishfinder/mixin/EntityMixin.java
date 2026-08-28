@@ -23,17 +23,20 @@ public class EntityMixin {
         if (entity instanceof TropicalFish tropicalFish) {
             TropicalFishConfig config = TropicalFishConfig.get();
             GlowMode mode = config.glowMode;
-            boolean wanted = mode == GlowMode.ALL
-                    || (mode == GlowMode.RARE && RareFishVariants.isRare(tropicalFish));
+            if (mode == GlowMode.OFF) {
+                return;
+            }
+            boolean wanted = mode == GlowMode.ALL || RareFishVariants.isRare(tropicalFish);
             if (wanted && config.glowOnlyUncollected
                     && FishCollection.isCollectedFast(FishCollection.packedOf(tropicalFish))) {
                 wanted = false;
             }
-            if (wanted) {
-                cir.setReturnValue(true);
-            } else if (mode != GlowMode.OFF && RareFishVariants.isRare(tropicalFish)) {
-                cir.setReturnValue(false);
-            }
+            // Always decide, never fall through: the server tick mirrors this
+            // method into synced flag 6 (LivingEntity.updateGlowingStatus), so
+            // a fish that glowed while uncollected has that flag stuck on the
+            // client. Falling through to vanilla would read the stale flag and
+            // keep already-loaded fish glowing after their variant is caught.
+            cir.setReturnValue(wanted);
         }
     }
 
