@@ -15,6 +15,7 @@
   "text.autoconfig.rarefishfinder.option.newCatchToasts": "New Catch Popup",
   "text.autoconfig.rarefishfinder.option.newCatchToasts.@Tooltip": "Advancement-style popup when you catch a variant for the first time. Rare variants get the gold framing and the challenge sound.",
   "toast.rarefishfinder.new_fish": "New fish collected!",
+  "toast.rarefishfinder.entry": "%s",
   "toast.rarefishfinder.new_rare": "Rare fish collected!",
   "text.autoconfig.rarefishfinder.option.namesEnabled": "Enable Names",
   "text.autoconfig.rarefishfinder.option.namesEnabled.@Tooltip": "Shows pattern and color information above rare tropical fish.",
@@ -50,5 +51,7 @@
   "toast.rarefishfinder.commons_complete": "All commons collected!",
   "toast.rarefishfinder.commons_complete.line": "Every named variant is yours",
   "toast.rarefishfinder.solids_complete": "All solids collected!",
-  "toast.rarefishfinder.solids_complete.line": "Every matching-color variant is yours"
+  "toast.rarefishfinder.solids_complete.line": "Every matching-color variant is yours",
+  "text.autoconfig.rarefishfinder.option.fancyToastsStyle": "Fancy Toasts Style",
+  "text.autoconfig.rarefishfinder.option.fancyToastsStyle.@Tooltip": "With the Fancy Toasts mod installed, its styled advancement toasts announce catches (on by default when present). Turn off to keep this mod's own popup with the live fish model and collection number."
 }

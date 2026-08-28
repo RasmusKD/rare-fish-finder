@@ -42,6 +42,7 @@
   "text.autoconfig.rarefishfinder.option.newCatchToasts": "Popup ved nyt fund",
   "text.autoconfig.rarefishfinder.option.newCatchToasts.@Tooltip": "Advancement-agtig popup når du fanger en variant første gang. Sjældne varianter får guldramme og udfordrings-fanfaren.",
   "toast.rarefishfinder.new_fish": "Ny fisk indsamlet!",
+  "toast.rarefishfinder.entry": "%s",
   "toast.rarefishfinder.new_rare": "Sjælden fisk indsamlet!",
   "toast.rarefishfinder.dex_complete": "FISKEDEX FULDENDT!",
   "toast.rarefishfinder.dex_complete.line": "Alle %s varianter indsamlet",
@@ -50,5 +51,7 @@
   "toast.rarefishfinder.commons_complete": "Alle almindelige indsamlet!",
   "toast.rarefishfinder.commons_complete.line": "Alle navngivne varianter er dine",
   "toast.rarefishfinder.solids_complete": "Alle ensfarvede indsamlet!",
-  "toast.rarefishfinder.solids_complete.line": "Alle varianter med ens farver er dine"
+  "toast.rarefishfinder.solids_complete.line": "Alle varianter med ens farver er dine",
+  "text.autoconfig.rarefishfinder.option.fancyToastsStyle": "Fancy Toasts-stil",
+  "text.autoconfig.rarefishfinder.option.fancyToastsStyle.@Tooltip": "Med Fancy Toasts installeret annonceres fangster gennem dens stylede advancement-toasts (til som standard). Slå fra for at beholde moddens egen popup med den levende fiskemodel og samlingsnummeret."
 }

@@ -104,6 +104,20 @@ public final class FishCollection {
         return -1;
     }
 
+    /** Inverse of {@link #numberOf}: collection number back to packed id. */
+    public static int packedFromNumber(int number) {
+        int colors = net.minecraft.world.item.DyeColor.values().length;
+        int n = number - 1;
+        if (n < 0 || n >= TOTAL_VARIANTS) {
+            return -1;
+        }
+        var patterns = net.minecraft.world.entity.animal.fish.TropicalFish.Pattern.values();
+        return new net.minecraft.world.entity.animal.fish.TropicalFish.Variant(
+                patterns[n / (colors * colors)],
+                net.minecraft.world.item.DyeColor.byId((n / colors) % colors),
+                net.minecraft.world.item.DyeColor.byId(n % colors)).getPackedId();
+    }
+
     /**
      * Canonical collection number, 1..TOTAL_VARIANTS: patterns in declaration
      * order, then base color, then pattern color. The numbering the toast

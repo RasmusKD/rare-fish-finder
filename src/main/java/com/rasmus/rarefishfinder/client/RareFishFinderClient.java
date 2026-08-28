@@ -78,7 +78,10 @@ public class RareFishFinderClient implements ClientModInitializer {
         }
         if (SyntheticAdvancementToasts.active()) {
             return SyntheticAdvancementToasts.create(
-                    NewCatchToast.titleFor(rare), NewCatchToast.lineFor(packed), rare, packed);
+                    NewCatchToast.numberedTitleFor(packed), NewCatchToast.lineFor(packed),
+                    rare ? net.minecraft.advancements.AdvancementType.GOAL
+                            : net.minecraft.advancements.AdvancementType.TASK,
+                    packed);
         }
         return new NewCatchToast(packed, rare);
     }
@@ -92,7 +95,8 @@ public class RareFishFinderClient implements ClientModInitializer {
             net.minecraft.network.chat.Component title,
             net.minecraft.network.chat.Component line, int packed) {
         if (SyntheticAdvancementToasts.active()) {
-            return SyntheticAdvancementToasts.create(title, line, true, packed);
+            return SyntheticAdvancementToasts.create(title, line,
+                    net.minecraft.advancements.AdvancementType.CHALLENGE, packed);
         }
         return new CelebrationToast(title, line, packed);
     }

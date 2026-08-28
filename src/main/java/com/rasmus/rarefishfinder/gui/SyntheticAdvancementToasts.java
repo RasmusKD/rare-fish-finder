@@ -38,17 +38,27 @@ public final class SyntheticAdvancementToasts {
     private SyntheticAdvancementToasts() {
     }
 
-    /** True when announcements should go through a real AdvancementToast. */
+    /**
+     * A player who installed Fancy Toasts chose its styling, so it wins by
+     * default when present; the toggle lets them keep this mod's own fish
+     * toast instead.
+     */
     public static boolean active() {
-        return FANCY_TOASTS_PRESENT;
+        return FANCY_TOASTS_PRESENT
+                && com.rasmus.rarefishfinder.config.TropicalFishConfig.get().fancyToastsStyle;
     }
 
-    public static Toast create(Component title, Component line, boolean challenge, int packed) {
+    /**
+     * Three tiers of framing: common catches are TASK (the everyday toast),
+     * rare catches step up to GOAL, and only milestones get CHALLENGE with
+     * its multi-burst fanfare, because a good session catches many fish.
+     */
+    public static Toast create(Component title, Component line, AdvancementType type, int packed) {
         DisplayInfo display = new DisplayInfo(
                 new ItemStackTemplate(Items.TROPICAL_FISH_BUCKET.builtInRegistryHolder(), 1,
                         DataComponentPatch.EMPTY),
                 title, line, Optional.empty(),
-                challenge ? AdvancementType.CHALLENGE : AdvancementType.TASK,
+                type,
                 true, false, false);
         Advancement advancement = new Advancement(Optional.empty(), Optional.of(display),
                 AdvancementRewards.EMPTY, Map.of(), AdvancementRequirements.allOf(List.of()), false);
