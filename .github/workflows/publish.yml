@@ -74,6 +74,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          # Full history: the changelog is the commit subjects since the
+          # previous tag, so shallow clones would leave it empty.
+          fetch-depth: 0
 
       - uses: actions/setup-java@v5
         with:
@@ -85,10 +89,25 @@ jobs:
       - name: Build
         run: ./gradlew build
 
+      # Every release gets a changelog without anyone writing one: the
+      # commit subjects since the previous tag, minus the version bump.
+      - name: Collect changelog
+        id: changelog
+        run: |
+          prev=$(git describe --tags --abbrev=0 "${GITHUB_REF_NAME}^" 2>/dev/null || true)
+          {
+            echo "text<<CHANGELOG_EOF"
+            if [ -n "$prev" ]; then
+              git log --pretty='- %s' "$prev..${GITHUB_REF_NAME}" | grep -v '^- Version ' || true
+            fi
+            echo "CHANGELOG_EOF"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Publish to GitHub release
         uses: Kir-Antipov/mc-publish@v3.3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          changelog: ${{ steps.changelog.outputs.text }}
           files: build/libs/!(*-sources).jar
           loaders: fabric
           game-versions: ">=26.1"
@@ -101,6 +120,7 @@ jobs:
         with:
           modrinth-id: FVGRgACI
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          changelog: ${{ steps.changelog.outputs.text }}
           files: build/libs/!(*-sources).jar
           loaders: fabric
           game-versions: ">=26.1"
