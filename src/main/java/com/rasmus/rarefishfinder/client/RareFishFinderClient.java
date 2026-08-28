@@ -5,6 +5,7 @@ import com.rasmus.rarefishfinder.collection.FishCollection;
 import com.rasmus.rarefishfinder.gui.CollectionScreen;
 import com.rasmus.rarefishfinder.gui.CelebrationToast;
 import com.rasmus.rarefishfinder.gui.NewCatchToast;
+import com.rasmus.rarefishfinder.gui.SyntheticAdvancementToasts;
 import com.rasmus.rarefishfinder.config.TropicalFishConfig;
 import com.rasmus.rarefishfinder.tooltip.FishTooltip;
 import com.rasmus.rarefishfinder.tooltip.FishTooltipRenderer;
@@ -43,14 +44,14 @@ public class RareFishFinderClient implements ClientModInitializer {
         var variant = new net.minecraft.world.entity.animal.fish.TropicalFish.Variant(packed);
         int colors = net.minecraft.world.item.DyeColor.values().length;
         if (FishCollection.collectedTotal() == FishCollection.TOTAL_VARIANTS) {
-            return new CelebrationToast(
+            return celebrate(
                     net.minecraft.network.chat.Component.translatable("toast.rarefishfinder.dex_complete"),
                     net.minecraft.network.chat.Component.translatable("toast.rarefishfinder.dex_complete.line",
                             FishCollection.TOTAL_VARIANTS),
                     packed);
         }
         if (FishCollection.patternCollected(variant.pattern()) == colors * colors) {
-            return new CelebrationToast(
+            return celebrate(
                     net.minecraft.network.chat.Component.translatable("toast.rarefishfinder.pattern_complete"),
                     net.minecraft.network.chat.Component.translatable("toast.rarefishfinder.pattern_complete.line",
                             net.minecraft.network.chat.Component.translatable(
@@ -62,7 +63,7 @@ public class RareFishFinderClient implements ClientModInitializer {
                 == net.minecraft.world.entity.animal.fish.TropicalFish.COMMON_VARIANTS.size()
                 && FishCollection.collectedCommons() > 0
                 && isCommon(packed)) {
-            return new CelebrationToast(
+            return celebrate(
                     net.minecraft.network.chat.Component.translatable("toast.rarefishfinder.commons_complete"),
                     net.minecraft.network.chat.Component.translatable("toast.rarefishfinder.commons_complete.line"),
                     packed);
@@ -70,12 +71,30 @@ public class RareFishFinderClient implements ClientModInitializer {
         if (variant.baseColor() == variant.patternColor()
                 && FishCollection.collectedSolids()
                         == net.minecraft.world.entity.animal.fish.TropicalFish.Pattern.values().length * colors) {
-            return new CelebrationToast(
+            return celebrate(
                     net.minecraft.network.chat.Component.translatable("toast.rarefishfinder.solids_complete"),
                     net.minecraft.network.chat.Component.translatable("toast.rarefishfinder.solids_complete.line"),
                     packed);
         }
+        if (SyntheticAdvancementToasts.active()) {
+            return SyntheticAdvancementToasts.create(
+                    NewCatchToast.titleFor(rare), NewCatchToast.lineFor(packed), rare, packed);
+        }
         return new NewCatchToast(packed, rare);
+    }
+
+    /**
+     * Milestones present as our gold CelebrationToast, or as a synthetic
+     * CHALLENGE AdvancementToast when Fancy Toasts is installed so its
+     * styling and sounds apply (see SyntheticAdvancementToasts).
+     */
+    private static net.minecraft.client.gui.components.toasts.Toast celebrate(
+            net.minecraft.network.chat.Component title,
+            net.minecraft.network.chat.Component line, int packed) {
+        if (SyntheticAdvancementToasts.active()) {
+            return SyntheticAdvancementToasts.create(title, line, true, packed);
+        }
+        return new CelebrationToast(title, line, packed);
     }
 
     private static boolean isCommon(int packed) {

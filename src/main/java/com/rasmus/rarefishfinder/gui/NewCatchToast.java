@@ -37,10 +37,19 @@ public class NewCatchToast implements Toast {
     public NewCatchToast(int packed, boolean rare) {
         this.packed = packed;
         this.rare = rare;
-        this.title = Component.translatable(rare
+        this.title = titleFor(rare);
+        this.line = lineFor(packed);
+    }
+
+    /** Shared with the Fancy Toasts bridge, so both presentations say the same thing. */
+    public static Component titleFor(boolean rare) {
+        return Component.translatable(rare
                 ? "toast.rarefishfinder.new_rare"
                 : "toast.rarefishfinder.new_fish");
-        this.line = Component.literal("#" + FishCollection.numberOf(packed) + " ")
+    }
+
+    public static Component lineFor(int packed) {
+        return Component.literal("#" + FishCollection.numberOf(packed) + " ")
                 .append(variantName(packed));
     }
 
