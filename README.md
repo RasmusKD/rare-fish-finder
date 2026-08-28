@@ -18,9 +18,8 @@ and this mod makes those glow and shows their pattern and colors above them.
 - Fish Collection tab in the vanilla advancements screen
 - Everything is in Mod Menu > Rare Fish Finder
 
-Optional integrations: Fancy Toasts (its styling, still our fish icon),
-Better Advancements, ClientSort / Mouse Wheelie (fish sort orders), Xaero's
-Minimap (map filters for fish hunting).
+Optional integrations: Fancy Toasts, Better Advancements, ClientSort,
+Mouse Wheelie and Xaero's Minimap.
 
 ## Requirements
 
