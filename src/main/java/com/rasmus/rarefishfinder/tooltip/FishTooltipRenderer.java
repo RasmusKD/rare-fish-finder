@@ -176,7 +176,26 @@ public final class FishTooltipRenderer implements ClientTooltipComponent {
         Quaternionf pose = new Quaternionf().rotateZ((float) Math.PI);
         Quaternionf camera = new Quaternionf().rotateX((float) Math.toRadians(tilt));
         pose.mul(camera);
-        Vector3f translation = new Vector3f(0.0F, fish.getBbHeight() / 2.0F + 0.03125F, 0.0F);
+        // Center on the mesh, not the hitbox: both vanilla models extend
+        // further toward the tail than the head (3 model units small, 2.5
+        // large), and their vertical centers sit 3.5 / 5 units above the
+        // ground plane - so an origin-anchored draw sits visibly off-center,
+        // worst in small boxes like the toast corner. The yaw projection
+        // moves the tail overhang onto the screen's x axis.
+        boolean small = new TropicalFish.Variant(packed).pattern().base() == TropicalFish.Base.SMALL;
+        float tailCenter = (small ? 3.0F : 2.5F) / 16.0F;
+        float heightCenter = (small ? 3.5F : 5.0F) / 16.0F;
+        // The tilt also projects the tail overhang onto the screen's y axis
+        // (down at the default 135/-45 pose), so that share comes off the
+        // vertical anchor.
+        float tailDrop = tailCenter
+                * (float) (Math.cos(Math.toRadians(yaw)) * Math.sin(Math.toRadians(tilt)));
+        // Damped to 60%: the silhouette in the 3/4 view is fin-heavy toward
+        // the head, so the full bbox projection over-corrects (measured
+        // against toast screenshots at the default pose).
+        Vector3f translation = new Vector3f(
+                0.6F * tailCenter * (float) Math.sin(Math.toRadians(yaw)),
+                heightCenter - tailDrop, 0.0F);
 
         Method entityCall = findEntityExtract();
         if (entityCall == null) {

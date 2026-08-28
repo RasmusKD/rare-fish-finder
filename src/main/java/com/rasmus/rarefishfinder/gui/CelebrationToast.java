@@ -56,8 +56,8 @@ public final class CelebrationToast implements Toast {
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, Font font, long fullyVisibleForMs) {
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, BACKGROUND_SPRITE, 0, 0, width(), height());
-        graphics.text(font, font.split(title, 125).get(0), 30, 7, TITLE_COLOR, false);
-        graphics.text(font, font.split(line, 125).get(0), 30, 18, 0xFFFFFFFF, false);
+        NewCatchToast.textFitted(graphics, font, title, 30, 7, 125, TITLE_COLOR);
+        NewCatchToast.textFitted(graphics, font, line, 30, 18, 125, 0xFFFFFFFF);
         TropicalFishConfig config = TropicalFishConfig.get();
         // The entity submit takes absolute screen coordinates and ignores the
         // pose (unlike text and sprites), while the toast manager positions
@@ -67,9 +67,9 @@ public final class CelebrationToast implements Toast {
         var pose = graphics.pose();
         int ox = Math.round(pose.m20);
         int oy = Math.round(pose.m21);
-        // Size follows the hover-preview ratio (scale ~0.9x the box height);
-        // 12 in a 24px box rendered the fish tiny.
-        FishTooltipRenderer.extractFish(graphics, packed, ox + 2, oy + 2, ox + 30, oy + 30, 24,
+        // Vanilla toast size; the fish shrinks to fit its 28px corner, same
+        // fixed pose as the tooltips and the collection screen.
+        FishTooltipRenderer.extractFish(graphics, packed, ox + 2, oy + 2, ox + 30, oy + 30, 26,
                 config.tooltipFishYaw, config.tooltipFishTilt);
     }
 }

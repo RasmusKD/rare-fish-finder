@@ -53,18 +53,34 @@ public class NewCatchToast implements Toast {
                 .append(variantName(packed));
     }
 
+    /**
+     * Advancement toasts (vanilla and Fancy Toasts) display only the
+     * advancement's title, never its description - so for the synthetic
+     * catch toasts the number line IS the title. The pass-through
+     * translatable keeps the "toast.rarefishfinder." key that the Fancy
+     * Toasts icon mixin recognises our toasts by.
+     */
+    public static Component numberedTitleFor(int packed) {
+        return Component.translatable("toast.rarefishfinder.entry", lineFor(packed));
+    }
+
     private static Component variantName(int packed) {
         Integer commonIndex = commonIndexOf(packed);
         if (commonIndex != null) {
             return Component.translatable("entity.minecraft.tropical_fish.predefined." + commonIndex);
         }
-        // Vanilla's own color keys, so the line localizes with the game
-        // ("Hvid / Limegrøn" on a Danish client, not "White / Lime").
+        // Vanilla's own pattern and color keys, so the line localizes with
+        // the game ("Hvid / Limegrøn" on a Danish client, not "White / Lime").
         TropicalFish.Variant variant = new TropicalFish.Variant(packed);
-        return Component.empty()
-                .append(Component.translatable("color.minecraft." + variant.baseColor().getName()))
-                .append(" / ")
-                .append(Component.translatable("color.minecraft." + variant.patternColor().getName()));
+        Component type = Component.translatable(
+                "entity.minecraft.tropical_fish.type." + variant.pattern().getSerializedName());
+        Component colors = variant.baseColor() == variant.patternColor()
+                ? Component.translatable("color.minecraft." + variant.baseColor().getName())
+                : Component.empty()
+                        .append(Component.translatable("color.minecraft." + variant.baseColor().getName()))
+                        .append(" / ")
+                        .append(Component.translatable("color.minecraft." + variant.patternColor().getName()));
+        return Component.empty().append(type).append(" ").append(colors);
     }
 
     private static @Nullable Integer commonIndexOf(int packed) {
@@ -76,6 +92,29 @@ public class NewCatchToast implements Toast {
         return null;
     }
 
+
+    /**
+     * One line, whole meaning: instead of vanilla's split-and-truncate, a
+     * line wider than the space shrinks just enough to fit, so long variant
+     * names ("#2152 Glitter Light Blue / Purple") stay readable in full.
+     * Shared with CelebrationToast.
+     */
+    static void textFitted(GuiGraphicsExtractor graphics, Font font, Component text,
+            int x, int y, int maxWidth, int color) {
+        var order = text.getVisualOrderText();
+        int width = font.width(order);
+        if (width <= maxWidth) {
+            graphics.text(font, order, x, y, color, false);
+            return;
+        }
+        float scale = maxWidth / (float) width;
+        var pose = graphics.pose();
+        pose.pushMatrix();
+        pose.translate(x, y + (9.0F - 9.0F * scale) / 2.0F);
+        pose.scale(scale, scale);
+        graphics.text(font, order, 0, 0, color, false);
+        pose.popMatrix();
+    }
 
     @Override
     public Toast.Visibility getWantedVisibility() {
@@ -91,15 +130,17 @@ public class NewCatchToast implements Toast {
 
     @Override
     public @Nullable SoundEvent getSoundEvent() {
-        return rare ? SoundEvents.UI_TOAST_CHALLENGE_COMPLETE : null;
+        // The challenge fanfare is reserved for milestones: a good session
+        // catches many rares, and the gold title carries the specialness.
+        return null;
     }
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, Font font, long fullyVisibleForMs) {
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, BACKGROUND_SPRITE, 0, 0, width(), height());
-        graphics.text(font, font.split(title, 125).get(0), 30, 7,
-                rare ? RARE_TITLE_COLOR : COMMON_TITLE_COLOR, false);
-        graphics.text(font, font.split(line, 125).get(0), 30, 18, 0xFFFFFFFF, false);
+        textFitted(graphics, font, title, 30, 7, 125,
+                rare ? RARE_TITLE_COLOR : COMMON_TITLE_COLOR);
+        textFitted(graphics, font, line, 30, 18, 125, 0xFFFFFFFF);
         TropicalFishConfig config = TropicalFishConfig.get();
         // The entity submit takes absolute screen coordinates and ignores the
         // pose (unlike text and sprites), while the toast manager positions
@@ -109,9 +150,9 @@ public class NewCatchToast implements Toast {
         var pose = graphics.pose();
         int ox = Math.round(pose.m20);
         int oy = Math.round(pose.m21);
-        // Size follows the hover-preview ratio (scale ~0.9x the box height);
-        // 12 in a 24px box rendered the fish tiny.
-        FishTooltipRenderer.extractFish(graphics, packed, ox + 2, oy + 2, ox + 30, oy + 30, 24,
+        // Vanilla toast size; the fish shrinks to fit its 28px corner, same
+        // fixed pose as the tooltips and the collection screen.
+        FishTooltipRenderer.extractFish(graphics, packed, ox + 2, oy + 2, ox + 30, oy + 30, 26,
                 config.tooltipFishYaw, config.tooltipFishTilt);
     }
 }
