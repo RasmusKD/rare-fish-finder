@@ -88,8 +88,8 @@ converts the one check that would have caught 2.5.2 and 2.8.0 into decoration.
 | `AdvancementsScreen` extract methods | `extractInside(G,xo,yo)`, `extractWindow(G,xo,yo,mouseX,mouseY)`, `extractTooltips(G,mouseX,mouseY,xo,yo)` | origin dropped from all three: `extractInside(G)`, `extractWindow(G,mouseX,mouseY)`, `extractTooltips(G,mouseX,mouseY)` | mixin pair + plugin; recompute the origin from the screen size |
 | Toast manager | `Minecraft.getToastManager()` | moved to `Minecraft.gui.toastManager()`, the Minecraft accessor is gone | resolve by name (`client/Toasts.java`) |
 | `InputConstants.Type.KEYSYM` (26.1 and 26.2 vs 26.3, third column is 26.3) | enum constant `KEYSYM` | renamed `KEYBOARD` (`SCANCODE` gone from the enum) | use the `KeyMapping(String, int, Category)` constructor, which exists on all three and means keysym |
-| Current screen (26.3 column = third) | `Minecraft.screen` field (26.1), `Minecraft.screen()` (26.2) | neither on `Minecraft`; `Minecraft.gui.screen()` | reflection by name, third fallback (`RareFishFinderClient.noScreenOpen`) |
-| Optional-mod mixins | n/a | n/a | every mixin with `targets = "<other mod class>"` needs `@Pseudo`, else the game crashes at start without that mod (ClientSort, Mouse Wheelie, Fancy Toasts, Xaero) |
+| Current screen | `Minecraft.screen` field | 26.2 and 26.3: no accessor on `Minecraft`, only `Minecraft.gui.screen()` (javap of both jars) | reflection by name with `gui.screen()` as the last fallback (`RareFishFinderClient.noScreenOpen`); the old two-step lookup could fall through to "no screen open" |
+| Optional-mod mixins | n/a | n/a | every mixin with `targets = "<other mod class>"` needs `@Pseudo`. Fabric Loader 0.19.5 (mixin 0.17.4) throws InvalidMixinException and the game crashes at start when the target mod is absent; Loader 0.19.3 only warned. Released 2.10.0 crashes on Loader 0.19.5 without Client Sort even on 26.1.2 |
 
 Identical in both, but not where you'd expect:
 
