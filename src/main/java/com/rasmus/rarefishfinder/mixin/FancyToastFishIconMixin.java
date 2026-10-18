@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -24,6 +25,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
  * original call untouched. Their classes are referenced only by name and
  * reflection, so the mixin simply never applies when the mod is absent.
  */
+@Pseudo
 @Mixin(targets = "net.bivrik.fancytoasts.client.toast.animation.FancyToastAnimation", remap = false)
 public abstract class FancyToastFishIconMixin {
 

@@ -1,6 +1,6 @@
-# 26.1 vs 26.2
+# 26.1 vs 26.2 vs 26.3
 
-One jar runs on both versions. The runtime uses mojmap names directly, so
+One jar runs on all three versions. The runtime uses mojmap names directly, so
 any renamed member is a hard crash on the other version. Add new finds here.
 
 ## This has now shipped broken twice, so read this part
@@ -62,6 +62,7 @@ cold on both:
 |---|---|
 | 26.1.2 | 0.155.2+26.1.2 |
 | 26.2 | 0.158.0+26.2 |
+| 26.3 | 0.163.0+26.3 |
 
 The CI matrix sets both per leg for exactly this reason.
 
@@ -86,6 +87,9 @@ converts the one check that would have caught 2.5.2 and 2.8.0 into decoration.
 | Gamerule ids | `doDaylightCycle`, `doWeatherCycle` | `advance_time`, `advance_weather` | server commands only |
 | `AdvancementsScreen` extract methods | `extractInside(G,xo,yo)`, `extractWindow(G,xo,yo,mouseX,mouseY)`, `extractTooltips(G,mouseX,mouseY,xo,yo)` | origin dropped from all three: `extractInside(G)`, `extractWindow(G,mouseX,mouseY)`, `extractTooltips(G,mouseX,mouseY)` | mixin pair + plugin; recompute the origin from the screen size |
 | Toast manager | `Minecraft.getToastManager()` | moved to `Minecraft.gui.toastManager()`, the Minecraft accessor is gone | resolve by name (`client/Toasts.java`) |
+| `InputConstants.Type.KEYSYM` (26.1 and 26.2 vs 26.3, third column is 26.3) | enum constant `KEYSYM` | renamed `KEYBOARD` (`SCANCODE` gone from the enum) | use the `KeyMapping(String, int, Category)` constructor, which exists on all three and means keysym |
+| Current screen (26.3 column = third) | `Minecraft.screen` field (26.1), `Minecraft.screen()` (26.2) | neither on `Minecraft`; `Minecraft.gui.screen()` | reflection by name, third fallback (`RareFishFinderClient.noScreenOpen`) |
+| Optional-mod mixins | n/a | n/a | every mixin with `targets = "<other mod class>"` needs `@Pseudo`, else the game crashes at start without that mod (ClientSort, Mouse Wheelie, Fancy Toasts, Xaero) |
 
 Identical in both, but not where you'd expect:
 

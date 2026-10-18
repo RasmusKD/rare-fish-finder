@@ -5,6 +5,7 @@ import com.rasmus.rarefishfinder.tooltip.FishTooltipRenderer;
 import net.minecraft.world.entity.animal.fish.TropicalFish;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -15,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * tropical fish buckets by pattern, then base color, then pattern color in
  * every sort mode. Skipped silently when ClientSort is not installed.
  */
+@Pseudo
 @Mixin(targets = "dev.terminalmc.clientsort.client.order.StackComparison", remap = false)
 public class ClientSortComparisonMixin {
 

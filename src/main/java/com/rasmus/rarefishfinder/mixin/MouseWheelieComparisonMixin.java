@@ -5,6 +5,7 @@ import com.rasmus.rarefishfinder.tooltip.FishTooltipRenderer;
 import com.rasmus.rarefishfinder.util.RareFishVariants;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -16,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * pattern, then base color, then pattern color. Skipped silently when
  * Mouse Wheelie is not installed.
  */
+@Pseudo
 @Mixin(targets = "de.siphalor.mousewheelie.client.util.ItemStackUtils", remap = false)
 public class MouseWheelieComparisonMixin {
 

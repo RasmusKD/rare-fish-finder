@@ -1,6 +1,5 @@
 package com.rasmus.rarefishfinder.client;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import com.rasmus.rarefishfinder.collection.FishCollection;
 import com.rasmus.rarefishfinder.gui.CollectionScreen;
 import com.rasmus.rarefishfinder.gui.CelebrationToast;
@@ -114,11 +113,13 @@ public class RareFishFinderClient implements ClientModInitializer {
             Identifier.fromNamespaceAndPath("rarefishfinder", "category"));
 
     // 26.1 exposes the current screen as the public field Minecraft.screen,
-    // 26.2 as the method Minecraft.screen(). A direct reference to either is
-    // a NoSuchFieldError/NoSuchMethodError on the other version, so the
-    // lookup happens once by name.
+    // 26.2 as the method Minecraft.screen(), and 26.3 only as Gui.screen() on
+    // the object at Minecraft.gui. A direct reference to any of them is a
+    // NoSuchFieldError/NoSuchMethodError on the others, so the lookup happens
+    // once by name.
     private static Method screenMethod;
     private static Field screenField;
+    private static Method guiScreenMethod;
     private static boolean screenLookupFailed;
 
     private static boolean noScreenOpen(Minecraft client) {
@@ -126,15 +127,20 @@ public class RareFishFinderClient implements ClientModInitializer {
             return true;
         }
         try {
-            if (screenMethod == null && screenField == null) {
+            if (screenMethod == null && screenField == null && guiScreenMethod == null) {
                 try {
                     screenMethod = Minecraft.class.getMethod("screen");
                 } catch (NoSuchMethodException e) {
-                    screenField = Minecraft.class.getField("screen");
+                    try {
+                        screenField = Minecraft.class.getField("screen");
+                    } catch (NoSuchFieldException e2) {
+                        guiScreenMethod = client.gui.getClass().getMethod("screen");
+                    }
                 }
             }
-            Object screen = screenMethod != null
-                    ? screenMethod.invoke(client) : screenField.get(client);
+            Object screen = screenMethod != null ? screenMethod.invoke(client)
+                    : screenField != null ? screenField.get(client)
+                    : guiScreenMethod.invoke(client.gui);
             return screen == null;
         } catch (ReflectiveOperationException e) {
             screenLookupFailed = true;
@@ -189,7 +195,6 @@ public class RareFishFinderClient implements ClientModInitializer {
         toggleGlowKeyBinding = KeyMappingHelper.registerKeyMapping(
                 new KeyMapping(
                         "key.rarefishfinder.toggleGlow",
-                        InputConstants.Type.KEYSYM,
                         82, // R key (for Rare fish)
                         RAREFISH_CATEGORY
                 )
@@ -198,7 +203,6 @@ public class RareFishFinderClient implements ClientModInitializer {
         toggleNamesKeyBinding = KeyMappingHelper.registerKeyMapping(
                 new KeyMapping(
                         "key.rarefishfinder.toggleNames",
-                        InputConstants.Type.KEYSYM,
                         78, // N key
                         RAREFISH_CATEGORY
                 )
@@ -207,7 +211,6 @@ public class RareFishFinderClient implements ClientModInitializer {
         collectionKeyBinding = KeyMappingHelper.registerKeyMapping(
                 new KeyMapping(
                         "key.rarefishfinder.collection",
-                        InputConstants.Type.KEYSYM,
                         66, // B key
                         RAREFISH_CATEGORY
                 )
