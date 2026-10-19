@@ -1,5 +1,6 @@
 package com.rasmus.rarefishfinder.gui;
 
+import com.rasmus.rarefishfinder.client.GuiSprites;
 import com.rasmus.rarefishfinder.collection.FishCollection;
 import com.rasmus.rarefishfinder.config.TropicalFishConfig;
 import com.rasmus.rarefishfinder.tooltip.FishTooltipRenderer;
@@ -11,7 +12,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.advancements.AdvancementTab;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.animal.fish.TropicalFish;
@@ -116,7 +116,7 @@ public final class FishTabView {
         Identifier sprite = index == 0
                 ? (selected ? TAB_FIRST_SEL : TAB_FIRST)
                 : (selected ? TAB_MIDDLE_SEL : TAB_MIDDLE);
-        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, tx, ty, 28, 32);
+        GuiSprites.blitSprite(graphics, sprite, tx, ty, 28, 32);
         graphics.fakeItem(ICON, tx + 6, ty + 9);
         if (mouseX > tx && mouseX < tx + 28 && mouseY > ty && mouseY < ty + 32) {
             graphics.setTooltipForNextFrame(font, Component.literal("Fish Collection"), mouseX, mouseY);
@@ -141,7 +141,7 @@ public final class FishTabView {
         // Tiled background like a real tab page.
         for (int bx = 0; bx < 234; bx += 16) {
             for (int by = 0; by < 113; by += 16) {
-                graphics.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND,
+                GuiSprites.blit(graphics, BACKGROUND,
                         ix + bx, iy + by, 0.0F, 0.0F,
                         Math.min(16, 234 - bx), Math.min(16, 113 - by), 16, 16);
             }
@@ -164,7 +164,7 @@ public final class FishTabView {
         // Root node: challenge frame, obtained when the whole dex is done.
         int total = FishCollection.collectedTotal();
         boolean dexDone = total == FishCollection.TOTAL_VARIANTS;
-        graphics.blitSprite(RenderPipelines.GUI_TEXTURED,
+        GuiSprites.blitSprite(graphics,
                 dexDone ? FRAME_ROOT_DONE : FRAME_ROOT,
                 ix + ROOT_X, iy + ROOT_Y, 26, 26);
         graphics.fakeItem(ICON, ix + ROOT_X + 5, iy + ROOT_Y + 5);
@@ -176,7 +176,7 @@ public final class FishTabView {
             int nx = ix + nodeX(i);
             int ny = iy + nodeY(i);
             int collected = FishCollection.patternCollected(PATTERNS[i]);
-            graphics.blitSprite(RenderPipelines.GUI_TEXTURED,
+            GuiSprites.blitSprite(graphics,
                     collected == full ? FRAME_TASK_DONE : FRAME_TASK, nx, ny, 26, 26);
             int poster = FishCollection.firstCollected(PATTERNS[i]);
             if (poster >= 0) {
@@ -234,7 +234,7 @@ public final class FishTabView {
     /** @return true when the click is ours and vanilla must not see it. */
     public boolean click(Screen parent, Minecraft minecraft, Map<AdvancementHolder, AdvancementTab> tabs,
             int screenWidth, int screenHeight, MouseButtonEvent event) {
-        if (event.button() != 0) {
+        if (!com.rasmus.rarefishfinder.client.MouseButtons.isLeft(event.button())) {
             return false;
         }
         int xo = originX(screenWidth);

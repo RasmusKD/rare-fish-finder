@@ -90,6 +90,8 @@ converts the one check that would have caught 2.5.2 and 2.8.0 into decoration.
 | `InputConstants.Type.KEYSYM` (26.1 and 26.2 vs 26.3, third column is 26.3) | enum constant `KEYSYM` | renamed `KEYBOARD` (`SCANCODE` gone from the enum) | use the `KeyMapping(String, int, Category)` constructor, which exists on all three and means keysym |
 | Current screen | `Minecraft.screen` field | 26.2 and 26.3: no accessor on `Minecraft`, only `Minecraft.gui.screen()` (javap of both jars) | reflection by name with `gui.screen()` as the last fallback (`RareFishFinderClient.noScreenOpen`); the old two-step lookup could fall through to "no screen open" |
 | Optional-mod mixins | n/a | n/a | every mixin with `targets = "<other mod class>"` needs `@Pseudo`. Fabric Loader 0.19.5 (mixin 0.17.4) throws InvalidMixinException and the game crashes at start when the target mod is absent; Loader 0.19.3 only warned. Released 2.10.0 crashes on Loader 0.19.5 without Client Sort even on 26.1.2 |
+| `RenderPipeline` package (26.1/26.2 vs 26.3) | `com.mojang.blaze3d.pipeline.RenderPipeline` | `com.mojang.renderpearl.api.pipeline.RenderPipeline`, which changes the descriptors of `RenderPipelines.GUI_TEXTURED`, `GuiGraphicsExtractor.blit` and `blitSprite` (link-time NoSuchFieldError/NoSuchMethodError) | resolve the field and both methods by name and parameter shape (`client/GuiSprites.java`) |
+| Left mouse button number (26.1/26.2 vs 26.3) | `MouseButtonEvent.button()` is 0 for left | 1 for left (`InputConstants.MOUSE_BUTTON_LEFT` = 1, MIDDLE = 2, RIGHT = 3) | read `MOUSE_BUTTON_LEFT` by reflection at runtime (`client/MouseButtons.java`); never compare `button()` with a literal |
 
 Identical in both, but not where you'd expect:
 

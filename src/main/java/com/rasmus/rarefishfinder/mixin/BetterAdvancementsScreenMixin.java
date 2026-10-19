@@ -103,7 +103,7 @@ public abstract class BetterAdvancementsScreenMixin extends Screen {
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void rff$clickFishTab(MouseButtonEvent event, boolean doubleClick,
             CallbackInfoReturnable<Boolean> cir) {
-        if (event.button() != 0 || event.modifiers() != 0) {
+        if (!com.rasmus.rarefishfinder.client.MouseButtons.isLeft(event.button()) || event.modifiers() != 0) {
             return;
         }
         // Their own mouseClicked recomputes the window box from scratch rather

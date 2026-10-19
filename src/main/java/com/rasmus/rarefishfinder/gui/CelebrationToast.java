@@ -1,12 +1,12 @@
 package com.rasmus.rarefishfinder.gui;
 
+import com.rasmus.rarefishfinder.client.GuiSprites;
 import com.rasmus.rarefishfinder.config.TropicalFishConfig;
 import com.rasmus.rarefishfinder.tooltip.FishTooltipRenderer;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastManager;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
@@ -55,7 +55,7 @@ public final class CelebrationToast implements Toast {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, Font font, long fullyVisibleForMs) {
-        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, BACKGROUND_SPRITE, 0, 0, width(), height());
+        GuiSprites.blitSprite(graphics, BACKGROUND_SPRITE, 0, 0, width(), height());
         NewCatchToast.textFitted(graphics, font, title, 30, 7, 125, TITLE_COLOR);
         NewCatchToast.textFitted(graphics, font, line, 30, 18, 125, 0xFFFFFFFF);
         TropicalFishConfig config = TropicalFishConfig.get();
