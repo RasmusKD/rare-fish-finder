@@ -3,8 +3,8 @@ package com.rasmus.rarefishfinder.client;
 import com.mojang.blaze3d.platform.InputConstants;
 
 /**
- * 26.1 and 26.2 number the left mouse button 0, 26.3 numbers it 1. The constant is read at runtime
- * so the value is not inlined at compile time into a jar that must run on all three.
+ * 26.1 and 26.2 number the left mouse button 0. The 26.3 jar replaces this class (it numbers the button 1;
+ * see src/mc26_3).
  */
 public final class MouseButtons {
     private static final int LEFT = resolveLeft();

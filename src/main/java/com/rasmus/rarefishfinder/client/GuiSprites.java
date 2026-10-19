@@ -6,16 +6,12 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 
 /**
- * Sprite and texture blits that survive the 26.3 move of RenderPipeline.
+ * Sprite and texture blits for the 26.1/26.2 jar. The 26.3 jar replaces this class with direct calls
+ * (src/mc26_3), because 26.3 moved RenderPipeline to `com.mojang.renderpearl.api.pipeline`.
  *
- * <p>26.1 and 26.2 declare the pipeline type in `com.mojang.blaze3d.pipeline`;
- * 26.3 moved it to `com.mojang.renderpearl.api.pipeline`. That changes the
- * descriptor of `RenderPipelines.GUI_TEXTURED`, `blitSprite` and `blit`, so a
- * direct call compiled on one version is a NoSuchFieldError/NoSuchMethodError
- * on the other. The field and both methods are resolved once by name and
- * parameter shape instead; the call sites stay the same on every version.
- */
-public final class GuiSprites {
+ * <p>Here the field and both methods are resolved once by name and parameter shape; the call sites stay
+ * the same in both jars.
+ */public final class GuiSprites {
 
     private GuiSprites() {
     }

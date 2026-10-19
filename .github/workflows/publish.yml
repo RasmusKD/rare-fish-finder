@@ -6,8 +6,8 @@ name: Publish
 # from the tag, so v2.8.1-release published a version literally called
 # "2.8.1-release".
 #
-# Verifies against ALL supported Minecraft versions, then builds the mod,
-# attaches the jar to a GitHub release, and publishes to Modrinth.
+# Verifies both jars against ALL their supported Minecraft versions, then builds
+# the two jars, attaches them to a GitHub release, and publishes to Modrinth.
 #
 # Modrinth setup (one-time):
 #   1. Create the project on https://modrinth.com and note its project ID
@@ -34,29 +34,40 @@ permissions:
   contents: write
 
 jobs:
-  # ONE jar runs on 26.1.x, 26.2 and 26.3, and they are NOT source-compatible
-  # (see VERSIONS.md). A build against only one of them is how 2.5.2 and 2.8.0
-  # both shipped crashing on 26.2 - each compiled fine against the version its
-  # author had configured, and nothing checked the other. This job is the gate:
-  # publish cannot run unless all three compile.
+  # The 26.1/26.2 jar and the 26.3 jar are separate builds and NOT
+  # source-compatible (see VERSIONS.md). A build against only one version is
+  # how 2.5.2 and 2.8.0 both shipped crashing on 26.2 - each compiled fine
+  # against the version its author had configured, and nothing checked the
+  # other. This job is the gate: every jar is compiled against every Minecraft
+  # version it claims and runs the mixin-class check; publish cannot run unless
+  # all of them pass.
   verify:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        # Minecraft and Fabric API move TOGETHER. A 26.1 Fabric API against
-        # 26.2 does not merely mismatch at runtime: its interface injection
-        # (FabricTagAppender -> TagAppender) fails during Loom's setup, before
-        # a line of this mod compiles, with an error that reads like a Loom
-        # bug. Override one without the other and the leg is red for a reason
-        # that has nothing to do with the code under test.
+        # Minecraft, Fabric API, Cloth Config and Mod Menu move TOGETHER. A 26.1
+        # Fabric API against 26.2 does not merely mismatch at runtime: its
+        # interface injection (FabricTagAppender -> TagAppender) fails during
+        # Loom's setup, before a line of this mod compiles, with an error that
+        # reads like a Loom bug. Override one without the other and the leg is
+        # red for a reason that has nothing to do with the code under test.
         include:
           - minecraft: "26.1.2"
             fabric: "0.155.2+26.1.2"
+            cloth: "26.1.154"
+            modmenu: "18.0.0"
+            target: ""
           - minecraft: "26.2"
             fabric: "0.158.0+26.2"
+            cloth: "26.2.155"
+            modmenu: "20.0.3"
+            target: ""
           - minecraft: "26.3"
             fabric: "0.163.0+26.3"
+            cloth: "26.3.158"
+            modmenu: "21.0.0"
+            target: "26.3"
     steps:
       - uses: actions/checkout@v7
 
@@ -68,7 +79,14 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
 
       - name: Build against Minecraft ${{ matrix.minecraft }}
-        run: ./gradlew build -Pminecraft_version=${{ matrix.minecraft }} -Pfabric_version=${{ matrix.fabric }}
+        run: >
+          ./gradlew build
+          -Pminecraft_version=${{ matrix.minecraft }}
+          -Pfabric_version=${{ matrix.fabric }}
+          -Pclothconfig_version=${{ matrix.cloth }}
+          -Pmodmenu_version=${{ matrix.modmenu }}
+          -Ploader_version=0.19.5
+          ${{ matrix.target != '' && format('-PmcTarget={0}', matrix.target) || '' }}
 
   publish:
     needs: verify
@@ -88,8 +106,14 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v6
 
-      - name: Build
-        run: ./gradlew build
+      # Two jars: the default build (26.1 and 26.2) and the 26.3 build.
+      - name: Build both jars
+        run: |
+          ./gradlew clean build
+          mkdir dist
+          cp build/libs/*+26.1.jar dist/
+          ./gradlew clean build -PmcTarget=26.3
+          cp build/libs/*+26.3.jar dist/
 
       # Every release gets a changelog without anyone writing one: the
       # commit subjects since the previous tag, minus the version bump.
@@ -110,9 +134,18 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           changelog: ${{ steps.changelog.outputs.text }}
-          files: build/libs/!(*-sources).jar
+          files: dist/*+26.1.jar
           loaders: fabric
-          game-versions: ">=26.1"
+          game-versions: ">=26.1 <26.3"
+
+      - name: Publish the 26.3 jar to the GitHub release
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          changelog: ${{ steps.changelog.outputs.text }}
+          files: dist/*+26.3.jar
+          loaders: fabric
+          game-versions: ">=26.3"
 
       - name: Publish to Modrinth
         if: env.MODRINTH_TOKEN != ''
@@ -123,6 +156,19 @@ jobs:
           modrinth-id: FVGRgACI
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           changelog: ${{ steps.changelog.outputs.text }}
-          files: build/libs/!(*-sources).jar
+          files: dist/*+26.1.jar
           loaders: fabric
-          game-versions: ">=26.1"
+          game-versions: ">=26.1 <26.3"
+
+      - name: Publish the 26.3 jar to Modrinth
+        if: env.MODRINTH_TOKEN != ''
+        uses: Kir-Antipov/mc-publish@v3.3
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+        with:
+          modrinth-id: FVGRgACI
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          changelog: ${{ steps.changelog.outputs.text }}
+          files: dist/*+26.3.jar
+          loaders: fabric
+          game-versions: ">=26.3"

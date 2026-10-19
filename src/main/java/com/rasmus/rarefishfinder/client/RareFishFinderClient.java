@@ -16,6 +16,7 @@ import net.minecraft.world.item.Items;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import me.shedaniel.autoconfig.AutoConfig;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.Minecraft;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -195,7 +196,7 @@ public class RareFishFinderClient implements ClientModInitializer {
         toggleGlowKeyBinding = KeyMappingHelper.registerKeyMapping(
                 new KeyMapping(
                         "key.rarefishfinder.toggleGlow",
-                        82, // R key (for Rare fish)
+                        InputConstants.KEY_R, // R for Rare fish
                         RAREFISH_CATEGORY
                 )
         );
@@ -203,7 +204,7 @@ public class RareFishFinderClient implements ClientModInitializer {
         toggleNamesKeyBinding = KeyMappingHelper.registerKeyMapping(
                 new KeyMapping(
                         "key.rarefishfinder.toggleNames",
-                        78, // N key
+                        InputConstants.KEY_N,
                         RAREFISH_CATEGORY
                 )
         );
@@ -211,7 +212,7 @@ public class RareFishFinderClient implements ClientModInitializer {
         collectionKeyBinding = KeyMappingHelper.registerKeyMapping(
                 new KeyMapping(
                         "key.rarefishfinder.collection",
-                        66, // B key
+                        InputConstants.KEY_B,
                         RAREFISH_CATEGORY
                 )
         );

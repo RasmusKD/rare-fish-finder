@@ -1,7 +1,9 @@
 # 26.1 vs 26.2 vs 26.3
 
-One jar runs on all three versions. The runtime uses mojmap names directly, so
-any renamed member is a hard crash on the other version. Add new finds here.
+Two jars: `rarefishfinder-X.Y.Z+26.1.jar` runs on 26.1.x and 26.2 (`minecraft >=26.1 <26.3`), `rarefishfinder-X.Y.Z+26.3.jar` runs on 26.3 (`minecraft >=26.3`). The runtime uses mojmap names directly, so
+any renamed member is a hard crash on the other version, and a build against one version proves nothing about the other. Add new finds here.
+
+`./gradlew build` makes the +26.1 jar, `./gradlew build -PmcTarget=26.3` the +26.3 jar (pins in `gradle-26.3.properties`). A file under `src/mc26_3/{java,resources}` replaces the same-named file of `src/main`; `src/mc26_3/remove.txt` lists main files the 26.3 jar drops (the two Legacy mixins). `verifyMixinClasses` (part of `check`) fails when a mixins.json entry has no class in that variant. Check each jar against the versions it claims, without starting the game: `python C:\Users\Rasmus\.claude\skills\minecraft-mods\scripts\linkcheck.py <jar> <mapped minecraft jar>`.
 
 ## This has now shipped broken twice, so read this part
 
@@ -14,8 +16,8 @@ is something to look up.
 
 So the rule is not "remember to check". The rule is:
 
-**CI builds against both 26.1.2 and 26.2 on every push, and `publish` cannot
-run unless both succeed** (`.github/workflows/publish.yml`, the `verify` job).
+**CI builds each jar against every version it claims (26.1.2 and 26.2 for the +26.1 jar, 26.3 for the +26.3 jar) on every push, and `publish` cannot
+run unless all succeed** (`.github/workflows/publish.yml`, the `verify` job).
 That gate is the actual protection. If you ever find yourself disabling it to
 get a release out, you are about to reproduce 2.8.0.
 
@@ -139,3 +141,12 @@ Gate every mod-specific mixin on the mod actually being present
 (`FabricLoader.isModLoaded`, see RareFishFinderMixinPlugin). Mixin aborts the
 whole config when a target class is missing, so one ungated compat mixin takes
 every other mixin in this mod down with it.
+
+## Split per jar (2.11.1)
+
+| What | +26.1 jar (26.1, 26.2) | +26.3 jar | Fix |
+|---|---|---|---|
+| Key codes (`InputConstants.KEY_*`, `KeyMapping` int argument) | GLFW keycodes (`KEY_R` 82, `KEY_N` 78, `KEY_B` 66) | SDL scancodes (`KEY_R` 21, `KEY_N` 17, `KEY_B` 5) | `RareFishFinderClient` passes `InputConstants.KEY_*`; each jar inlines its own value. Never write a number |
+| Left mouse button | 0 | 1 (`InputConstants.MOUSE_BUTTON_LEFT`) | `MouseButtons`: reflection in main, direct constant in `src/mc26_3` |
+| `RenderPipeline` package | `com.mojang.blaze3d.pipeline` | `com.mojang.renderpearl.api.pipeline` | `GuiSprites`: reflection in main, direct calls in `src/mc26_3` |
+| Gui/Hud and AdvancementsScreen extract pairs | Legacy (26.1) and Modern (26.2) twins chosen by `RareFishFinderMixinPlugin` | Modern only | Legacy mixins in `remove.txt`; `src/mc26_3` carries its own mixins.json and plugin |

@@ -1,0 +1,3 @@
+# src/main files the 26.3 jar drops (relative to java/ or resources/)
+java/com/rasmus/rarefishfinder/mixin/AdvancementsScreenLegacyMixin.java
+java/com/rasmus/rarefishfinder/mixin/GuiHotbarLegacyMixin.java

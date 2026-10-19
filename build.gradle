@@ -3,7 +3,17 @@ plugins {
     id 'maven-publish'
 }
 
-version = project.mod_version
+// -PmcTarget=26.3 builds the 26.3 jar: pins from gradle-26.3.properties plus the
+// sources under src/mc26_3, which replace same-named files of src/main.
+if (project.findProperty('mcTarget') == '26.3') {
+    def pins = new Properties()
+    file('gradle-26.3.properties').withInputStream { pins.load(it) }
+    pins.each { k, v -> project.setProperty(k as String, v as String) }
+}
+def modern = project.minecraft_version.startsWith('26.3')
+def mcLabel = modern ? '26.3' : '26.1'
+
+version = "${project.mod_version}+${mcLabel}"
 group = project.maven_group
 
 base {
@@ -50,14 +60,55 @@ dependencies {
     compileOnly "maven.modrinth:better-advancements:0.6.0.72"
 }
 
+// The 26.3 jar is built from src/main plus src/mc26_3: a file under src/mc26_3/{java,resources}
+// replaces the same-named file of src/main, and src/mc26_3/remove.txt lists src/main files
+// (relative to java/ or resources/) that the 26.3 jar drops.
+def overlaid = [] as Set
+def removed = [] as Set
+def overlayRoot = file('src/mc26_3')
+['java', 'resources'].each { kind ->
+    def dir = new File(overlayRoot, kind)
+    if (dir.exists()) {
+        dir.eachFileRecurse { f ->
+            if (f.isFile()) {
+                overlaid << ("${kind}/" + dir.toPath().relativize(f.toPath()).toString().replace(File.separator, '/')).toString()
+            }
+        }
+    }
+}
+def removeList = new File(overlayRoot, 'remove.txt')
+if (removeList.exists()) {
+    removeList.eachLine { l -> if (l.trim() && !l.startsWith('#')) removed << l.trim() }
+}
+def replacedInMain = { String kind, element ->
+    def path = element.file.path.replace(File.separator, '/')
+    element.file.isFile() && path.contains("/src/main/${kind}/") &&
+            (overlaid.contains("${kind}/${element.relativePath.pathString}".toString()) ||
+                    removed.contains("${kind}/${element.relativePath.pathString}".toString()))
+}
+if (modern) {
+    sourceSets.main.java {
+        srcDir 'src/mc26_3/java'
+        exclude { element -> replacedInMain('java', element) }
+    }
+    sourceSets.main.resources {
+        srcDir 'src/mc26_3/resources'
+        exclude { element -> replacedInMain('resources', element) }
+    }
+}
+
+def mcRange = modern ? '>=26.3' : '>=26.1 <26.3'
+
 processResources {
     inputs.property "version", project.version
     inputs.property "loader_version", project.loader_version
+    inputs.property "mc_range", mcRange
     filteringCharset "UTF-8"
 
     filesMatching("fabric.mod.json") {
         expand "version": project.version,
-                "loader_version": project.loader_version
+                "loader_version": project.loader_version,
+                "mc_range": mcRange
     }
 }
 
@@ -88,3 +139,23 @@ publishing {
     repositories {
     }
 }
+
+// Every mixin a config lists must be a compiled class of this variant's jar.
+tasks.register('verifyMixinClasses') {
+    dependsOn tasks.named('classes')
+    doLast {
+        def classesDir = sourceSets.main.java.destinationDirectory.get().asFile
+        def resDir = sourceSets.main.output.resourcesDir
+        resDir.eachFileMatch(~/.*\.mixins\.json/) { cfg ->
+            def json = new groovy.json.JsonSlurper().parse(cfg)
+            def names = (json.mixins ?: []) + (json.client ?: []) + (json.server ?: [])
+            names.each { n ->
+                def cls = new File(classesDir, "${json.package.replace('.', '/')}/${n.replace('.', '/')}.class")
+                if (!cls.exists()) {
+                    throw new GradleException("${cfg.name} lists ${json.package}.${n}, which is not compiled in this variant")
+                }
+            }
+        }
+    }
+}
+tasks.named('check') { dependsOn 'verifyMixinClasses' }

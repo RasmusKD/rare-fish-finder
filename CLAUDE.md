@@ -8,12 +8,14 @@ Read the `minecraft-mods` skill first (`C:\Users\Rasmus\.claude\skills\minecraft
 
 - Java 25: `JAVA_HOME=C:\Users\Rasmus\.jdks\jdk-25.0.3+9`, then `./gradlew build`. The jar is written to `build/libs/`.
 - No unit tests; the check is a clean build plus a run in a Modrinth App instance (see the skill).
-- One jar runs on 26.1.x, 26.2 and 26.3. Also compile against the others before claiming support: `./gradlew build -Pminecraft_version=26.2 -Pfabric_version=0.158.0+26.2` and `./gradlew build -Pminecraft_version=26.3 -Pfabric_version=0.163.0+26.3`. Renamed vanilla members are listed in `VERSIONS.md`; add new finds there.
+- Two jars from one tree: `./gradlew build` makes `rarefishfinder-X.Y.Z+26.1.jar` (26.1.x and 26.2), `./gradlew build -PmcTarget=26.3` makes `+26.3` (pins in `gradle-26.3.properties`; files in `src/mc26_3` replace same-named `src/main` files, `remove.txt` drops some). Compile the 26.1 jar against 26.2 too: `./gradlew build -Pminecraft_version=26.2 -Pfabric_version=0.158.0+26.2 -Pclothconfig_version=26.2.155 -Pmodmenu_version=20.0.3 -Ploader_version=0.19.5`. In PowerShell quote every `-P` argument with a version, or `26.2` is cut at the dot.
+- Key codes: never a bare number or `GLFW_KEY_*`. 26.3 uses SDL scancodes, so use `InputConstants.KEY_*` (inlined per jar).
+- Static proof: `python C:\Users\Rasmus\.claude\skills\minecraft-mods\scripts\linkcheck.py <jar> <mapped minecraft jar>` per jar per claimed version. Renamed vanilla members are listed in `VERSIONS.md`; add new finds there.
 - The server syncs the glow flag, so the mixin must always decide the answer for tropical fish and never fall through to vanilla.
 
 ## Release
 
-Tag only: `git tag vX.Y.Z` then push the tag. The tag must be exactly `vX.Y.Z` (a suffix becomes part of the Modrinth version name). `.github/workflows/publish.yml` builds all three MC versions, gates on them, then publishes to GitHub and Modrinth. Never hand-publish; check the workflow first. Pushing a tag is a public release: only on Rasmus' word.
+Tag only: `git tag vX.Y.Z` then push the tag. The tag must be exactly `vX.Y.Z` (a suffix becomes part of the Modrinth version name). `.github/workflows/publish.yml` builds both jars against every version they claim, gates on them, then publishes each jar to GitHub and Modrinth with its own game-versions. Never hand-publish; check the workflow first. Pushing a tag is a public release: only on Rasmus' word.
 
 ## Keep skills and docs current (same rule as Nordvec)
 
