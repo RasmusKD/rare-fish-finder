@@ -78,8 +78,11 @@ public class RareFishFinderClient implements ClientModInitializer {
         }
         if (SyntheticAdvancementToasts.active()) {
             return SyntheticAdvancementToasts.create(
-                    NewCatchToast.numberedTitleFor(packed), NewCatchToast.lineFor(packed),
-                    rare ? net.minecraft.advancements.AdvancementType.GOAL
+                    // Advancement toasts show only the title, so the
+                    // number line is the title; the description is unused.
+                    NewCatchToast.lineFor(packed), NewCatchToast.titleFor(rare),
+                    NewCatchToast.lineFor(packed),
+                    rare ? net.minecraft.advancements.AdvancementType.CHALLENGE
                             : net.minecraft.advancements.AdvancementType.TASK,
                     packed);
         }
@@ -95,7 +98,7 @@ public class RareFishFinderClient implements ClientModInitializer {
             net.minecraft.network.chat.Component title,
             net.minecraft.network.chat.Component line, int packed) {
         if (SyntheticAdvancementToasts.active()) {
-            return SyntheticAdvancementToasts.create(title, line,
+            return SyntheticAdvancementToasts.create(title, null, line,
                     net.minecraft.advancements.AdvancementType.CHALLENGE, packed);
         }
         return new CelebrationToast(title, line, packed);

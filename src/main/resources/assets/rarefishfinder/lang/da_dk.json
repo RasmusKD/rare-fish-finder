@@ -42,7 +42,6 @@
   "text.autoconfig.rarefishfinder.option.newCatchToasts": "Popup ved nyt fund",
   "text.autoconfig.rarefishfinder.option.newCatchToasts.@Tooltip": "Advancement-agtig popup når du fanger en variant første gang. Sjældne varianter får guldramme og udfordrings-fanfaren.",
   "toast.rarefishfinder.new_fish": "Ny fisk indsamlet!",
-  "toast.rarefishfinder.entry": "%s",
   "toast.rarefishfinder.new_rare": "Sjælden fisk indsamlet!",
   "toast.rarefishfinder.dex_complete": "FISKEDEX FULDENDT!",
   "toast.rarefishfinder.dex_complete.line": "Alle %s varianter indsamlet",

@@ -10,7 +10,7 @@
     "ClientSortComparisonMixin",
     "AdvancementsScreenModernMixin",
     "BetterAdvancementsScreenMixin",
-    "FancyToastFishIconMixin",
+    "FancyToastBridgeMixin",
     "ContainerScreenMixin",
     "HudHotbarModernMixin",
     "ItemMixin",

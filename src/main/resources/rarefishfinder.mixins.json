@@ -11,7 +11,7 @@
     "AdvancementsScreenLegacyMixin",
     "AdvancementsScreenModernMixin",
     "BetterAdvancementsScreenMixin",
-    "FancyToastFishIconMixin",
+    "FancyToastBridgeMixin",
     "ContainerScreenMixin",
     "GuiHotbarLegacyMixin",
     "HudHotbarModernMixin",

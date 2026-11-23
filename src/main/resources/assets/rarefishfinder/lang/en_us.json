@@ -15,7 +15,6 @@
   "text.autoconfig.rarefishfinder.option.newCatchToasts": "New Catch Popup",
   "text.autoconfig.rarefishfinder.option.newCatchToasts.@Tooltip": "Advancement-style popup when you catch a variant for the first time. Rare variants get the gold framing and the challenge sound.",
   "toast.rarefishfinder.new_fish": "New fish collected!",
-  "toast.rarefishfinder.entry": "%s",
   "toast.rarefishfinder.new_rare": "Rare fish collected!",
   "text.autoconfig.rarefishfinder.option.namesEnabled": "Enable Names",
   "text.autoconfig.rarefishfinder.option.namesEnabled.@Tooltip": "Shows pattern and color information above rare tropical fish.",

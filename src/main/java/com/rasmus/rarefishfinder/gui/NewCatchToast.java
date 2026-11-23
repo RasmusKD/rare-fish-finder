@@ -53,17 +53,6 @@ public class NewCatchToast implements Toast {
                 .append(variantName(packed));
     }
 
-    /**
-     * Advancement toasts (vanilla and Fancy Toasts) display only the
-     * advancement's title, never its description - so for the synthetic
-     * catch toasts the number line IS the title. The pass-through
-     * translatable keeps the "toast.rarefishfinder." key that the Fancy
-     * Toasts icon mixin recognises our toasts by.
-     */
-    public static Component numberedTitleFor(int packed) {
-        return Component.translatable("toast.rarefishfinder.entry", lineFor(packed));
-    }
-
     private static Component variantName(int packed) {
         Integer commonIndex = commonIndexOf(packed);
         if (commonIndex != null) {
@@ -130,9 +119,9 @@ public class NewCatchToast implements Toast {
 
     @Override
     public @Nullable SoundEvent getSoundEvent() {
-        // The challenge fanfare is reserved for milestones: a good session
-        // catches many rares, and the gold title carries the specialness.
-        return null;
+        // A first rare catch is the moment players hunt for, so it gets the
+        // challenge fanfare like a milestone; common first catches stay quiet.
+        return rare ? SoundEvents.UI_TOAST_CHALLENGE_COMPLETE : null;
     }
 
     @Override
