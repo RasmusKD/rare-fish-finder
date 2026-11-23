@@ -1,0 +1,32 @@
+# Keeps the Modrinth project description equal to modrinth.md on main.
+# A release that adds, removes or changes a feature edits modrinth.md in the
+# same change; this pushes it with the MODRINTH_TOKEN secret (scope: write
+# projects) and fails if Modrinth does not then serve exactly that text.
+name: Modrinth description
+
+on:
+  push:
+    branches: [main]
+    paths: [modrinth.md]
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update the Modrinth body
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+        run: |
+          jq -Rs '{body: .}' modrinth.md > body.json
+          curl -sS --fail-with-body -X PATCH \
+            -H "Authorization: $MODRINTH_TOKEN" \
+            -H "Content-Type: application/json" \
+            -A "RasmusKD/rare-fish-finder description sync" \
+            --data @body.json https://api.modrinth.com/v2/project/FVGRgACI
+      - name: Check the live body
+        run: |
+          curl -sS -A "RasmusKD/rare-fish-finder description sync" \
+            https://api.modrinth.com/v2/project/FVGRgACI | jq -j .body > live.md
+          diff modrinth.md live.md

@@ -18,6 +18,8 @@ Read the `minecraft-mods` skill first. It holds the cross-mod rules: dual-versio
 
 Tag only: `git tag vX.Y.Z` then push the tag. The tag must be exactly `vX.Y.Z` (a suffix becomes part of the Modrinth version name). `.github/workflows/publish.yml` builds both jars against every version they claim, gates on them, then publishes each jar to GitHub and Modrinth with its own game-versions. Never hand-publish; check the workflow first. Pushing a tag is a public release: only on Rasmus' word.
 
+The Modrinth description is `modrinth.md`. A change that adds, removes or changes a feature edits the lines it touches there in the same change. On main, `.github/workflows/description.yml` pushes it to Modrinth and fails unless Modrinth then serves exactly that text. The CurseForge description is edited by hand on authors.curseforge.com, which needs Rasmus' login.
+
 ## Keep skills and docs current (same rule as Nordvec)
 
 When you learn something new, update the doc the next agent reads in the same change: this file for build and release facts, `README.md` for user-facing behavior, `VERSIONS.md` for 26.1/26.2/26.3 splits, and the `minecraft-mods` skill for cross-mod lessons. Correct or delete outdated text instead of adding a contradicting note. Then run `python <minecraft-mods skill>/scripts/check_citations.py`.
