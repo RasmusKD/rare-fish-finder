@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.rasmus.rarefishfinder.test.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "FancyToastAnimationProbeMixin",
+    "FancyToastSoundProbeMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

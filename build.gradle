@@ -58,6 +58,25 @@ dependencies {
     // versions (verified: BetterAdvancementsScreen.class is byte-identical in
     // their 26.1.2 and 26.2 jars), so one coordinate serves both our legs.
     compileOnly "maven.modrinth:better-advancements:0.6.0.72"
+
+    // Client gametest only: -PfancyToastsTest=<Modrinth version number> puts
+    // Fancy Toasts in the test client, so the bridge to it is tested for real.
+    if (project.hasProperty('fancyToastsTest')) {
+        localRuntime "maven.modrinth:fancy-toasts:${project.fancyToastsTest}"
+    }
+}
+
+// Headless client gametest (src/gametest, dev only, never in the jar):
+// ./gradlew runClientGametest, run under Xvfb in WSL by the minecraft-mods
+// skill's wsl_gametest script.
+fabricApi {
+    configureTests {
+        createSourceSet = true
+        modId = "rarefishfinder-test"
+        enableGameTests = false
+        enableClientGameTests = true
+        eula = true
+    }
 }
 
 // The 26.3 jar is built from src/main plus src/mc26_3: a file under src/mc26_3/{java,resources}

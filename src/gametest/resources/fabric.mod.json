@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "rarefishfinder-test",
+  "version": "1.0.0",
+  "name": "Rare Fish Finder client gametest",
+  "environment": "client",
+  "entrypoints": {
+    "fabric-client-gametest": [
+      "com.rasmus.rarefishfinder.test.RareFishFinderClientGameTest"
+    ]
+  },
+  "mixins": [
+    "rarefishfinder-test.mixins.json"
+  ],
+  "depends": {
+    "rarefishfinder": "*"
+  }
+}
