@@ -93,7 +93,7 @@ converts the one check that would have caught 2.5.2 and 2.8.0 into decoration.
 | Current screen | `Minecraft.screen` field | 26.2 and 26.3: no accessor on `Minecraft`, only `Minecraft.gui.screen()` (javap of both jars) | reflection by name with `gui.screen()` as the last fallback (`RareFishFinderClient.noScreenOpen`); the old two-step lookup could fall through to "no screen open" |
 | Optional-mod mixins | n/a | n/a | every mixin with `targets = "<other mod class>"` needs `@Pseudo`. Fabric Loader 0.19.5 (mixin 0.17.4) throws InvalidMixinException and the game crashes at start when the target mod is absent; Loader 0.19.3 only warned. Released 2.10.0 crashes on Loader 0.19.5 without Client Sort even on 26.1.2 |
 | `RenderPipeline` package (26.1/26.2 vs 26.3) | `com.mojang.blaze3d.pipeline.RenderPipeline` | `com.mojang.renderpearl.api.pipeline.RenderPipeline`, which changes the descriptors of `RenderPipelines.GUI_TEXTURED`, `GuiGraphicsExtractor.blit` and `blitSprite` (link-time NoSuchFieldError/NoSuchMethodError) | resolve the field and both methods by name and parameter shape (`client/GuiSprites.java`) |
-| Left mouse button number (26.1/26.2 vs 26.3) | `MouseButtonEvent.button()` is 0 for left | 1 for left (`InputConstants.MOUSE_BUTTON_LEFT` = 1, MIDDLE = 2, RIGHT = 3) | read `MOUSE_BUTTON_LEFT` by reflection at runtime (`client/MouseButtons.java`); never compare `button()` with a literal |
+| Mouse button numbers (26.1/26.2 vs 26.3) | `MouseButtonEvent.button()` is 0 for left, 1 for right | 1 for left, 3 for right (`InputConstants.MOUSE_BUTTON_LEFT` = 1, MIDDLE = 2, RIGHT = 3) | compare with `InputConstants.MOUSE_BUTTON_*` (`client/MouseButtons.java`); the constants inline per jar. Never compare `button()` with a literal |
 
 Identical in both, but not where you'd expect:
 
@@ -147,6 +147,6 @@ every other mixin in this mod down with it.
 | What | +26.1 jar (26.1, 26.2) | +26.3 jar | Fix |
 |---|---|---|---|
 | Key codes (`InputConstants.KEY_*`, `KeyMapping` int argument) | GLFW keycodes (`KEY_R` 82, `KEY_N` 78, `KEY_B` 66) | SDL scancodes (`KEY_R` 21, `KEY_N` 17, `KEY_B` 5) | `RareFishFinderClient` passes `InputConstants.KEY_*`; each jar inlines its own value. Never write a number |
-| Left mouse button | 0 | 1 (`InputConstants.MOUSE_BUTTON_LEFT`) | `MouseButtons`: reflection in main, direct constant in `src/mc26_3` |
+| Mouse buttons | left 0, right 1 | left 1, right 3 (`InputConstants.MOUSE_BUTTON_*`) | `MouseButtons` compares with the constants; each jar inlines its own values, so no overlay |
 | `RenderPipeline` package | `com.mojang.blaze3d.pipeline` | `com.mojang.renderpearl.api.pipeline` | `GuiSprites`: reflection in main, direct calls in `src/mc26_3` |
 | Gui/Hud and AdvancementsScreen extract pairs | Legacy (26.1) and Modern (26.2) twins chosen by `RareFishFinderMixinPlugin` | Modern only | Legacy mixins in `remove.txt`; `src/mc26_3` carries its own mixins.json and plugin |

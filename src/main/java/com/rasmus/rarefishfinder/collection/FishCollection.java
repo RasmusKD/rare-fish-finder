@@ -63,6 +63,32 @@ public final class FishCollection {
         }
     }
 
+    /**
+     * Hand edit from the collection screen: a player who lost a bucket (or
+     * marked one by mistake) sets the variant's state directly. The catch
+     * count stays, since the catches happened.
+     */
+    public static void setCollected(int packed, boolean collected) {
+        Entry entry = entryFor(packed);
+        if (entry.collected != collected) {
+            entry.collected = collected;
+            if (collected) {
+                collectedFast.add(packed);
+            } else {
+                collectedFast.remove(packed);
+            }
+            save();
+        }
+    }
+
+    /** Empties this server's (or world's) collection, catch counts included. */
+    public static void reset() {
+        ensureLoaded();
+        entries.clear();
+        collectedFast.clear();
+        save();
+    }
+
     /** Records a catch; true when this variant was not collected before. */
     public static boolean addCatch(int packed) {
         Entry entry = entryFor(packed);

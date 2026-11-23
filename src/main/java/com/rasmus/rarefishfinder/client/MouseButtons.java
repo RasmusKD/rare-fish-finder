@@ -3,24 +3,19 @@ package com.rasmus.rarefishfinder.client;
 import com.mojang.blaze3d.platform.InputConstants;
 
 /**
- * 26.1 and 26.2 number the left mouse button 0. The 26.3 jar replaces this class (it numbers the button 1;
- * see src/mc26_3).
+ * Mouse button checks by name. 26.1/26.2 number left 0 and right 1, 26.3 numbers them 1 and 3;
+ * the constants are inlined at compile time, so each jar carries its own values.
  */
 public final class MouseButtons {
-    private static final int LEFT = resolveLeft();
 
     private MouseButtons() {
     }
 
-    private static int resolveLeft() {
-        try {
-            return InputConstants.class.getField("MOUSE_BUTTON_LEFT").getInt(null);
-        } catch (ReflectiveOperationException | RuntimeException e) {
-            return 0;
-        }
+    public static boolean isLeft(int button) {
+        return button == InputConstants.MOUSE_BUTTON_LEFT;
     }
 
-    public static boolean isLeft(int button) {
-        return button == LEFT;
+    public static boolean isRight(int button) {
+        return button == InputConstants.MOUSE_BUTTON_RIGHT;
     }
 }

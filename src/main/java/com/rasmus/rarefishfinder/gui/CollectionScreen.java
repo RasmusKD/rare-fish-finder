@@ -1,5 +1,6 @@
 package com.rasmus.rarefishfinder.gui;
 
+import com.rasmus.rarefishfinder.client.MouseButtons;
 import com.rasmus.rarefishfinder.collection.FishCollection;
 import com.rasmus.rarefishfinder.config.TropicalFishConfig;
 import com.rasmus.rarefishfinder.tooltip.FishTooltipRenderer;
@@ -8,6 +9,7 @@ import java.util.Map;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.animal.fish.TropicalFish;
 import net.minecraft.world.item.DyeColor;
@@ -15,7 +17,10 @@ import net.minecraft.world.item.DyeColor;
 /**
  * The fish collection ("fishdex"): one tab per pattern, each a 15x15 grid of
  * base color x pattern color. Cell states: dark = never seen, dim colors =
- * spotted swimming, full colors = collected in a bucket.
+ * spotted swimming, full colors = collected in a bucket. Right-clicking a
+ * cell flips it between collected and not collected, and the Reset button
+ * (pressed twice) empties the whole collection, for players whose record no
+ * longer matches the buckets they own.
  */
 public final class CollectionScreen extends Screen {
     private static final TropicalFish.Pattern[] PATTERNS = TropicalFish.Pattern.values();
@@ -24,6 +29,9 @@ public final class CollectionScreen extends Screen {
     private static final int GRID = CELL * COLORS.length;
     private static final int PANEL_PAD = 10;
     private static final int INFO_WIDTH = 130;
+    // The second Reset press must follow the first within this window, so a
+    // stray click never wipes a collection.
+    private static final long RESET_CONFIRM_MS = 3000;
 
     // Packed variant id -> index into COMMON_VARIANTS, which is also the
     // index of the official vanilla name (predefined.0 = Anemone, ...).
@@ -42,6 +50,8 @@ public final class CollectionScreen extends Screen {
     private int panelY;
     private int gridX;
     private int gridY;
+    private Button resetButton;
+    private long resetArmedUntil;
 
     /** Where Esc returns to; null closes to the game (the B key path). */
     private final net.minecraft.client.gui.screens.Screen parent;
@@ -79,9 +89,52 @@ public final class CollectionScreen extends Screen {
                 .bounds(gridX, panelY + PANEL_PAD, 20, 16).build());
         addRenderableWidget(Button.builder(Component.literal(">"), b -> switchPattern(1))
                 .bounds(gridX + GRID - 20, panelY + PANEL_PAD, 20, 16).build());
+        resetButton = addRenderableWidget(Button.builder(Component.literal("Reset"), b -> pressReset())
+                .bounds(gridX + GRID + PANEL_PAD, gridY + GRID - 16, 60, 16).build());
         addRenderableWidget(Button.builder(Component.literal("Done"), b -> onClose())
                 .bounds(panelX + panelWidth - PANEL_PAD - 60,
                         gridY + GRID - 16, 60, 16).build());
+    }
+
+    private void pressReset() {
+        long now = System.currentTimeMillis();
+        if (now < resetArmedUntil) {
+            FishCollection.reset();
+            disarmReset();
+        } else {
+            resetArmedUntil = now + RESET_CONFIRM_MS;
+            resetButton.setMessage(Component.literal("Sure?"));
+        }
+    }
+
+    private void disarmReset() {
+        resetArmedUntil = 0;
+        resetButton.setMessage(Component.literal("Reset"));
+    }
+
+    /** The packed variant under the cursor in the current pattern's grid, or -1. */
+    private int cellAt(double mouseX, double mouseY) {
+        if (mouseX < gridX || mouseY < gridY) {
+            return -1;
+        }
+        int col = (int) ((mouseX - gridX) / CELL);
+        int row = (int) ((mouseY - gridY) / CELL);
+        if (col >= COLORS.length || row >= COLORS.length) {
+            return -1;
+        }
+        return new TropicalFish.Variant(PATTERNS[patternIndex], COLORS[row], COLORS[col]).getPackedId();
+    }
+
+    @Override
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (MouseButtons.isRight(event.button())) {
+            int packed = cellAt(event.x(), event.y());
+            if (packed != -1) {
+                FishCollection.setCollected(packed, !FishCollection.isCollected(packed));
+                return true;
+            }
+        }
+        return super.mouseClicked(event, doubleClick);
     }
 
     private void switchPattern(int direction) {
@@ -100,6 +153,10 @@ public final class CollectionScreen extends Screen {
         extractor.fill(panelX - 2, panelY - 2, panelX + panelWidth + 2, panelY + panelHeight + 2,
                 0xF0100C18);
         extractor.fill(panelX, panelY, panelX + panelWidth, panelY + panelHeight, 0xFF1C1426);
+
+        if (resetArmedUntil != 0 && System.currentTimeMillis() >= resetArmedUntil) {
+            disarmReset();
+        }
 
         TropicalFish.Pattern pattern = PATTERNS[patternIndex];
 
@@ -211,6 +268,8 @@ public final class CollectionScreen extends Screen {
             infoLine(extractor, infoX + 8, infoY + 1, "Common (has a name)", 0xFFAAAAAA);
             extractor.fill(infoX, infoY + 14, infoX + 4, infoY + 18, 0xFFFF77FF);
             infoLine(extractor, infoX + 8, infoY + 12, "Solid (matching colors)", 0xFFAAAAAA);
+            infoLine(extractor, infoX, infoY + 30, "Right-click a fish to", 0xFF888888);
+            infoLine(extractor, infoX, infoY + 41, "mark or unmark it", 0xFF888888);
         }
 
         // progress block, bottom of the info column, clear of the Done button
