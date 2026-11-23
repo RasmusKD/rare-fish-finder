@@ -3,7 +3,7 @@
 Two jars: `rarefishfinder-X.Y.Z+26.1.jar` runs on 26.1.x and 26.2 (`minecraft >=26.1 <26.3`), `rarefishfinder-X.Y.Z+26.3.jar` runs on 26.3 (`minecraft >=26.3`). The runtime uses mojmap names directly, so
 any renamed member is a hard crash on the other version, and a build against one version proves nothing about the other. Add new finds here.
 
-`./gradlew build` makes the +26.1 jar, `./gradlew build -PmcTarget=26.3` the +26.3 jar (pins in `gradle-26.3.properties`). A file under `src/mc26_3/{java,resources}` replaces the same-named file of `src/main`; `src/mc26_3/remove.txt` lists main files the 26.3 jar drops (the two Legacy mixins). `verifyMixinClasses` (part of `check`) fails when a mixins.json entry has no class in that variant. Check each jar against the versions it claims, without starting the game: `python C:\Users\Rasmus\.claude\skills\minecraft-mods\scripts\linkcheck.py <jar> <mapped minecraft jar>`.
+`./gradlew build` makes the +26.1 jar, `./gradlew build -PmcTarget=26.3` the +26.3 jar (pins in `gradle-26.3.properties`). A file under `src/mc26_3/{java,resources}` replaces the same-named file of `src/main`; `src/mc26_3/remove.txt` lists main files the 26.3 jar drops (the two Legacy mixins). `verifyMixinClasses` (part of `check`) fails when a mixins.json entry has no class in that variant. Check each jar against the versions it claims, without starting the game: `python <minecraft-mods skill>/scripts/linkcheck.py <jar> <mapped minecraft jar>`.
 
 ## This has now shipped broken twice, so read this part
 
